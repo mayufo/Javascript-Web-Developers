@@ -1,7 +1,6 @@
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var OpenBrowserPlugin = require('open-browser-webpack-plugin');
 var path = require('path');
-
-
 
 module.exports = {
     entry: ['./src/chapter1', './src/chapter2'],
@@ -11,14 +10,17 @@ module.exports = {
 
     },
 
-    plugins: [new HtmlWebpackPlugin({
-        title: 'Javascript-Web-Developers',
-        template: './index.html',
-        filename: 'index.html'
-    })],
+    plugins: [
+        new OpenBrowserPlugin({url: 'http://localhost:9543'}),
+        new HtmlWebpackPlugin({
+            title: 'Javascript-Web-Developers',
+            template: './index.html',
+            filename: 'index.html'
+        })
+    ],
     devServer: {
         contentBase: path.join(__dirname, "dist"),
         compress: true,
-        port: 9000
+        port: 9543
     }
 }
