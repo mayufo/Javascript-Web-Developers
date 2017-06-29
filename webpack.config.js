@@ -3,7 +3,7 @@ var OpenBrowserPlugin = require('open-browser-webpack-plugin');
 var path = require('path');
 
 module.exports = {
-    entry: ['./src/chapter1', './src/chapter2'],
+    entry: ['./src/chapter3/chapter3'],
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'app.bundle.js'
