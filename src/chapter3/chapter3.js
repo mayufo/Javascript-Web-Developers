@@ -65,4 +65,23 @@ console.log(-64 >>> 5);
 
 var found = false;
 
-console.log( found && someValue)
+console.log(found && someValue);
+
+console.log(['1', '2'] && ['3', '4']);
+console.log(true && ['3', '4']);
+
+console.log(0 * Infinity)
+console.log('a' * Infinity);
+
+console.log("==============");
+
+console.log(0 / 0); // NaN
+console.log(Infinity / Infinity); // NaN
+console.log(Infinity / 0); // Infinity
+
+console.log(Infinity / Infinity); // NaN
+console.log(Infinity + -Infinity);
+
+console.log('23' < '3'); //true
+
+console.log('a' < 3); // false

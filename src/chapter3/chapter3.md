@@ -209,4 +209,54 @@ console.log(-64 >>> 5); //134217726
 
 ### 布尔操作符  p44
 
-`!!` 也就是模拟 `Boolean()`
+- `!` 取反
+- `!!` 也就是模拟 `Boolean()`
+- `&&` 属于短路操作，如果第一个操作能决定结果，不会对第二个操作
+```js
+console.log(['1', '2'] && ['3', '4']); // [3,4]
+console.log( false && someValue) //没有定义的变量不会报错
+```
+两个数都输对象返回第二个对象
+
+- `||` 也属于短路操作，可以用来避免null或者undefined
+
+- `*` 乘
+```js
+console.log(0 * Infinity); // NaN
+console.log('a' * Infinity); // Infinity -Infinity
+```
+两个数都是对象返回第一个
+
+- `/` 除
+如果一个值是NaN,结果也是NaN
+```js
+console.log(0 / 0); // NaN
+console.log(Infinity / Infinity); // NaN
+console.log(Infinity / 0); // Infinity
+```
+- '%' 取模
+```js
+console.log(Infinity % 0); // NaN
+```
+- '+' 加
+如果操作数中其中有一个是字符串，就拼接起来
+```js
+console.log(Infinity + -Infinity); //NaN
+```
+
+- `-` 减
+如果一个操作数是字符、布尔、null或undefined在后台会调用 `Number()`函数，将其转为数值
+
+### 关系操作符
+如果是字符串，会比较字符编码值。字符编码中小写字母的值大于 大写字母的值
+如果是对象会调用 `valueOf()`或`toString()`方法
+当其中有个操作数是数字，将会对另一个操作数进行转换
+
+```js
+console.log('23' < '3'); //true 因为3的字符串编码是51，2是50
+console.log('a' < 3); // false
+```
+
+NaN参与的比较中都是false p52
+
+`==` 判断操作数相等，操作时会先转换操作数（强制转型）

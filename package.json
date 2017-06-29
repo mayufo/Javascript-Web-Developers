@@ -20,6 +20,7 @@
   "homepage": "https://github.com/mayufo/Javascript-Web-Developers#readme",
   "devDependencies": {
     "html-webpack-plugin": "^2.29.0",
+    "open-browser-webpack-plugin": "^0.0.5",
     "rimraf": "^2.6.1",
     "webpack": "^3.0.0",
     "webpack-dev-server": "^2.5.0"

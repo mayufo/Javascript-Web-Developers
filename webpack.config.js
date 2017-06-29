@@ -15,7 +15,8 @@ module.exports = {
         new HtmlWebpackPlugin({
             title: 'Javascript-Web-Developers',
             template: './index.html',
-            filename: 'index.html'
+            filename: 'index.html',
+            favicon: path.resolve(__dirname, 'favicon.ico')
         })
     ],
     devServer: {
