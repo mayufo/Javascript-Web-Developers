@@ -1,9 +1,10 @@
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var OpenBrowserPlugin = require('open-browser-webpack-plugin');
 var path = require('path');
+var chapter = 4; // please select you want show chapter, you can select 3、4
 
 module.exports = {
-    entry: ['./src/chapter3/chapter3'],
+    entry: './src/chapter'+ chapter +'/chapter' + chapter,
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'app.bundle.js'
