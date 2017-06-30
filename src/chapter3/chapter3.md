@@ -168,10 +168,19 @@ console.log(-'z');  // NaN
 var num4 = 25;
 console.log(~num4);  // 26
 ```
-
+~00000000000000000000000000001001
+=11111111111111111111111111110110
+~9 = -10
 - 按位与
 
 ![](../../assets/Javascript3.png);
+001 
+&　
+011 
+=
+001
+
+1&3 = 1
 
 ```js
 console.log( 25 & 3) //1
@@ -181,23 +190,39 @@ console.log( 25 & 3) //1
 
 ![](../../assets/Javascript4.png);
 
-console.log( 25 | 3)
+001 
+|
+011 
+=
+011
+
+1&3 = 3
+
+
+
 
 - 按位异或
 
 ![](../../assets/Javascript5.png);
+相等的转为0，不相等的转为1
+
+001 
+^
+011 
+=
+010
 
 - 左移 `<<`
 
 ```js
-console.log(2 << 5); // 64
+console.log(2 << 5); // 64  相当于2*2*2*2*2*2
 ```
 不影响操作的符号位 -2 向左移5位，结果是-64
 
 - 有符号右移 `>>`
 
 ```js
-console.log(64 >> 5); // 2
+console.log(64 >> 5); // 2 相当于64/2/2/2/2/2
 ```
 
 - 无符号的右移 `>>>` 对于正数来说都一样，对于负数就是补码的形势进行
@@ -248,6 +273,7 @@ console.log(Infinity + -Infinity); //NaN
 如果一个操作数是字符、布尔、null或undefined在后台会调用 `Number()`函数，将其转为数值
 
 ### 关系操作符
+
 如果是字符串，会比较字符编码值。字符编码中小写字母的值大于 大写字母的值
 如果是对象会调用 `valueOf()`或`toString()`方法
 当其中有个操作数是数字，将会对另一个操作数进行转换
@@ -259,4 +285,138 @@ console.log('a' < 3); // false
 
 NaN参与的比较中都是false p52
 
-`==` 判断操作数相等，操作时会先转换操作数（强制转型）
+`==` 判断操作数相等，操作时会先转换操作数（强制转型），再判断是否相等
+`===` 不会转换操作直接判断（推荐）
+
+### 条件操作符
+
+```js
+var able = boolean_expression ? true_value : false_value
+```
+
+### 逗号操作符
+
+逗号操作符总会返回表达式最后一项
+```js
+console.log((5, 1, 4, 0)); // 0
+```
+
+## 语句
+
+### if 语句
+
+推荐的语法
+
+```js
+if (i > 5) {
+    console.log(5);
+} else if ( i < 0) {
+    console.log(0);
+} else {
+    console.log('other');
+}
+```
+
+### do-while 语句
+
+先执行后判断的循环，所以循环至少执行一次
+
+```js
+var i = 0;
+do {
+    i += 2;
+} while (i < 0);
+console.log(i); // 2
+```
+
+### while 语句
+
+先判断后执行，前测试循环语句
+
+```js
+var i = 0;
+while(i < 10) {
+   i += 2; 
+}
+```
+
+### for语句
+
+也是前测试循环语句
+
+```js
+for(;;) {
+    
+} // 无限循环
+```
+
+循环中的i,在外部也可以调用
+
+### for in 语句
+
+精准的迭代语句，用来枚举对象的属性
+```js
+for(var propName in window ) {
+    document.write(propName);
+}
+```
+通过for...in 循环输出的顺序是不可预测的，根据浏览器而异
+建议在for...in 循环前检验对象的值是不是空
+
+### break和continue语句
+
+`break`语句会立即退出循环，强制继续执行循环后面的语句
+`continue`立即退出循环，退出后从会从循环的顶部继续执行
+
+`break` 和 `continue` 语句都可以与 `label` 语句联合使用,有了`label` break可以直接跳出到最外层循环，如果没有label它只能跳出一层循环
+
+```js
+var num5 = 0;
+outermost:
+    for (var i=0; i < 10; i++) {
+        for (var j=0; j < 10; j++) {
+            if (i == 5 && j == 5) {
+                break outermost;
+            }
+            num5++;
+        }
+    }
+console.log(num5); //55
+```
+### with 语句
+
+`with`语句是将代码作用域设置到特定的对象中，主要为了简化多次编写同一个对象的工作
+由于 `with`导致语句性能下降，不建议使用
+
+### switch 语句
+
+```js
+switch (expression) {
+    case value: statement
+     break
+    case value: statement
+     break;
+    default: statement
+}
+```
+如果省略`break`关键字就会导致执行当前 `case`后再执行下一个 `case`。 `default`关键字用于表达不匹配前面任何一种的情况，相当于 `else`语句
+
+每个`case`的值不一定是常量，也可以是变量或者表达式
+
+`switch`在比较值时使用的是全等操作符
+
+## 函数
+
+函数会在执行完 `return`语句之后停止并立即退出，`return`不带值返回 `undefined`
+
+### 理解参数
+
+函数不介意传递进来多少个参数和参数类型
+函数体通过 `argument`对象来访问这个参数数组，从而获取传递给函数的每一个参数
+命名的参数是提供方便，不是必须的
+`argument`可以和命名参数一起使用，它们访问的内存空间是独立的
+严格模式下不能对 `argument`进行赋值
+
+### 没有重载
+
+如果定义两个相同名字的函数，该名字只属于后定义的函数

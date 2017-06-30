@@ -52,6 +52,23 @@ console.log(-false);
 var num4 = 25;
 console.log(~num4);  // 26
 
+if (~'mayufo'.indexOf('may')) {
+    console.log(true);
+}
+
+
+var a = 1,
+    b = 2;
+
+console.log(a, b);
+
+a ^= b;
+
+b ^= a;
+
+a ^= b;
+
+console.log(a, b);
 console.log( 25 & 3)
 
 console.log( 25 | 3)
@@ -85,3 +102,41 @@ console.log(Infinity + -Infinity);
 console.log('23' < '3'); //true
 
 console.log('a' < 3); // false
+
+console.log(455.34 | 0);
+
+console.log((5, 1, 4, 0));
+
+var i = 0;
+do {
+    i += 2;
+} while (i < 0);
+console.log(i);
+
+for(var propName in window ) {
+    document.write(propName + ' ');
+}
+
+var num5 = 0;
+outermost:
+    for (var i=0; i < 10; i++) {
+        for (var j=0; j < 10; j++) {
+            if (i == 5 && j == 5) {
+                break outermost;
+            }
+            num5++;
+        }
+    }
+console.log(num5);
+
+var num6 = 0;
+
+    for (var i=0; i < 10; i++) {
+        for (var j=0; j < 10; j++) {
+            if (i == 5 && j == 5) {
+                break
+            }
+            num6++;
+        }
+    }
+console.log(num6);
