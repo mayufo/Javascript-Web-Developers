@@ -31,4 +31,24 @@ setName(person);
 
 console.log(person.name); //mayufo
 
-person
+var color = 'blue';
+
+function changeColor() {
+    if(color === 'blue') {
+        color = 'red';
+    } else {
+        color = 'blue'
+    }
+}
+
+changeColor();
+
+console.log('Color is now ' + color);
+
+if(true) {
+    var color1 = 'blue';
+}
+
+console.log(color1); // blue
+
+
