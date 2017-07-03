@@ -2,3 +2,13 @@
 之前学了webpack，正好用webpack来搭建个环境,那么开始我的表演吧！大家记得替我留灯
 
 想看第章节的例子可以在webpack.config.js中设置chapter变量
+
+
+安装依赖
+```
+npm install
+```
+
+```
+npm run dev
+```
