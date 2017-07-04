@@ -112,13 +112,36 @@ console.log(pattern1.multiline); // false
 console.log(pattern1.lastIndex); // 0
 console.log(pattern1.source); // \[bc\]at
 
+var text = 'this has been a short summer';
+var patterns = /(.)hort/g;
+
+if(patterns.test(text)) {
+    console.log(RegExp.input, RegExp['$_']); //this has benn a short summer
+    console.log(RegExp.leftContext, RegExp['$`']); // this has benn a
+    console.log(RegExp.rightContext,RegExp["$'"]); // summer
+    console.log(RegExp.lastMatch, RegExp['$&']); //short
+    console.log(RegExp.lastParen, RegExp['$+']); //s
+    console.log(RegExp.multiple, RegExp['$*']); // 浏览器显示undefined
+}
+
+var text = 'this has benn a short summer'
+
+var pattern = /(..)or(.)/g;
+
+if(pattern.test(text)) {
+    console.log(RegExp.$1); //sh
+    console.log(RegExp.$2); //t
+}
 
 
 
 
 
-console.log(sum(10, 10));
-function sum(num1, num2) {
+
+console.log(sumF(10, 10));
+
+function sumF(num1, num2) {
+
     return num1 + num2;
 }
 
@@ -193,25 +216,25 @@ function inner1() {
 outer1();
 
 function sayName(name) {
-    conole.log(name);
+    console.log(name);
 }
 
 console.log(sayName.length);
 
-function sum(num1, num2) {
+function sumFF(num1, num2) {
     return num1 + num2;
 }
 
 function callSum1(num1, num2) {
-    return sum.apply(this, arguments);
+    return sumFF.apply(this, arguments);
 }
 
 function callSum2(num1, num2) {
-    return sum.apply(this, [num1, num2]);
+    return sumFF.apply(this, [num1, num2]);
 }
 
 function callSum3(num1, num2) {
-    return sum.call(this, num1, num2);
+    return sumFF.call(this, num1, num2);
 }
 
 
@@ -245,3 +268,30 @@ function sayColor() {
 
 var objectSayColor = sayColor.bind(o);
 objectSayColor(); //blue
+
+var obj = new Object('some text');
+console.log(obj instanceof String); //true
+
+var value = '25';
+var number = Number(value); // 转型函数
+console.log(typeof number)// number
+
+var obj = new Number(value); //构造函数
+console.log(typeof obj); // object
+
+var falseObject = new Boolean(false);
+var result = falseObject && true;
+console.log(result); // true
+console.log(typeof falseObject); //Object
+console.log(falseObject instanceof Boolean); //true
+
+var falseValue = false;
+var result1 = falseValue && true;
+console.log(result1)  // false
+console.log(typeof falseValue); //boolean
+console.log(falseValue instanceof Boolean); //false
+
+
+
+
+

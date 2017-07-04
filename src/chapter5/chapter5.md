@@ -416,8 +416,32 @@ console.log(pattern1.source); // \[bc\]at
 
 ### RegExp构造函数属性
 
+正则的一些表达式操作
 
-# 面向对象的程序设计
+```js
+if(patterns.test(text)) {
+    console.log(RegExp.input, RegExp['$_']); //this has benn a short summer
+    console.log(RegExp.leftContext, RegExp['$`']); // this has benn a
+    console.log(RegExp.rightContext,RegExp["$'"]); // summer
+    console.log(RegExp.lastMatch, RegExp['$&']); //short
+    console.log(RegExp.lastParen, RegExp['$+']); //s
+    console.log(RegExp.multiple, RegExp['$*']); // 浏览器显示undefined
+}
+```
+
+用于存储捕获组的构造函数，最多有9个
+
+```js
+if(pattern.test(text)) {
+    console.log(RegExp.$1); //sh
+    console.log(RegExp.$2); //t
+}
+```
+
+### 模式的局限性
+
+缺少某些语言所支持的高级正则表达式特性
+
 
 
 ## Function 类型
@@ -647,4 +671,113 @@ objectSayColor(); //blue
 - `toLocaleString()`和`toString()`方法始终返回函数的代码，格式根据浏览器。`valueOf()`也只返回函数代码
 
 ## 基本包装类型
+
+3种特殊的引用类型： `Boolean`、`Numner`、`String`
+每当读取一个基本类型值的时候，后台就会创建一个对应的基本包装类型的对象
+
+```js
+var s1 = 'mayufo';
+var s2 = s1.substring(2);
+```
+基本类型值不是对象，逻辑上讲他们不应该有方法，但确实有方法
+
+在后台完成如下处理
+- 创建 `string`的一个实例
+- 实例上调用指定的方法
+- 销毁这个实例
+
+```js
+var s1 = new String('myaufo');
+var s2 = s1.substring(2);
+s1 = null;
+```
+
+上面的步骤适用于 `Boolean`和 `Number`
+
+`引用类型`和`基本包装类型`主要区别就是对象的生存期
+引用类型 当执行流离开当前作用域之前一直保存在内存中
+基本包类型 只存在于一行代码的执行瞬间，然后立即被销毁，无法在基本类型值添加属性和方法
+
+
+也可以显示调用 `Boolean`、`Number`、`String`来创建基本包装类型的对象，但是应该在必要的情况下
+
+`Object`构造函数就想工厂一样，根据传入值的类型返回相应基本保证类型的实例
+
+```js
+var obj = new Object('some text');
+console.log(obj instanceof String); //true
+```
+
+使用`new`调用基本包装构造函数和同名转型函数是不一样的
+
+```js
+var value = '25';
+var number = Number(value); // 转型函数
+console.log(typeof number)// number
+
+var obj = new Number(value); //构造函数
+console.log(typeof obj); // object
+```
+
+### Boolean类型
+
+```js
+var falseObject = new Boolean(false);
+var result = falseObject && true;
+console.log(result); // true
+
+
+var falseValue = false;
+var result1 = falseValue && true;
+console.log(result1)  // false
+```
+
+
+`Boolean()`类型的实例重写了`valueOf()`、`toString()`返回字符串`true`和`false`,
+不建议直接实例化`Boolean`
+
+```js
+var falseValue = false;
+var result1 = falseValue && true;
+console.log(result1)  // false
+console.log(typeof falseValue); //boolean
+console.log(falseValue instanceof Boolean); //false
+```
+
+### Number 类型
+
+`toString()`方法传递一个表示基数的参数，返回几进制的字符串形势
+
+```js
+var num = 10;
+console.log(num.toString()); // '10'
+console.log(num.toString(2)); // '1010'
+console.log(num.toString(8)); // '12'
+```
+
+`toFixed()` 按照指定的小数位数返回数值的字符串表示,能够四舍五入，适用于货币，但是每个浏览器又有所不同
+可以表示 0 - 20个小数位
+
+```js
+var numFix = 10;
+console.log(numFix.toFixed(2)) // 10.00
+```
+
+`toExponentail()`返回以指数表示
+
+```js
+var numEx = 10;
+console.log(numEx.toExponential(1)); //1.0e+1
+```
+
+`toPrecision`返回固定大小格式，也可能返回指数格式，表示0 - 21位小数
+
+```js
+var numPre = 99;
+console.log(num.toPrecision(1)); // 1e+2 用一位表示99，无法精准用1e+2即100
+console.log(num.toPrecision(2)); //'99'
+console.log(num.toPrecision(3)); // '99.0'
+```
+
+不建议直接实例化`Number`,同`Boolean`
 
