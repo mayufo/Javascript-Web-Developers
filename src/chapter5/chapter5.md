@@ -781,3 +781,17 @@ console.log(num.toPrecision(3)); // '99.0'
 
 不建议直接实例化`Number`,同`Boolean`
 
+### String 类型
+
+`valueOf()`、`toLocaleString()`和 `toString()`都返回对象所便是的基本字符串值
+
+每个实例都有个`length`属性
+
+- 字符串方法
+
+`charAt()`以单字符串字符串的形式返回给定位置的字符串
+```js
+var stringValue = 'hello world'
+console.log(stringValue.charAt(1)); //'e'
+```
+`charCodeAt()`

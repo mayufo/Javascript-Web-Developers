@@ -291,7 +291,8 @@ console.log(result1)  // false
 console.log(typeof falseValue); //boolean
 console.log(falseValue instanceof Boolean); //false
 
-
+var stringValue = 'hello world'
+console.log(stringValue.charAt(1));
 
 
 
