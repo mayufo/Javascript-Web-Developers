@@ -291,8 +291,31 @@ console.log(result1)  // false
 console.log(typeof falseValue); //boolean
 console.log(falseValue instanceof Boolean); //false
 
-var stringValue = 'hello world'
+var stringValue = 'hello world';
 console.log(stringValue.charAt(1));
+console.log(stringValue.charCodeAt(1));
+console.log(stringValue.concat('world'));
 
 
+console.log(stringValue.slice(3));
+console.log(stringValue.substring(3));
+console.log(stringValue.substr(3));
+console.log(stringValue.slice(3, 7));
+console.log(stringValue.substring(3, 7));
+console.log(stringValue.substr(3, 7));
 
+console.log(stringValue.slice(-3));
+console.log(stringValue.substring(-3));
+console.log(stringValue.substr(-3));
+console.log(stringValue.slice(3, -4));
+console.log(stringValue.substring(3, -4));
+console.log(stringValue.substr(3, -4));
+
+
+var stringValue1 = "Lorem ipsum dolor sit amet, consectetur adipisicing elit"; var positions = new Array();
+var pos = stringValue1.indexOf("e");
+while(pos > -1){
+    positions.push(pos);
+    pos = stringValue1.indexOf("e", pos + 1);
+}
+console.log(positions);

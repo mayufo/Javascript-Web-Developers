@@ -793,5 +793,76 @@ console.log(num.toPrecision(3)); // '99.0'
 ```js
 var stringValue = 'hello world'
 console.log(stringValue.charAt(1)); //'e'
+console.log(stringValue.charCodeAt(1));  // 101
 ```
-`charCodeAt()`
+
+`charCodeAt()`返回对应的字符编码
+
+- 字符串的操作方法
+
+`concat()`用于将一或者多个字符串拼接起来，返回新的字符串
+
+```js
+var stringValue = 'hello';
+console.log(stringValue.concat('world')); // hello world
+```
+
+- `+`通常字符串的拼接用的加好
+
+- `slice()` 、`substr()`和 `substring()` 都返回操作字符串的子字符串，第一个参数是开始位置，第二个参数是结束位置(不包含)。
+
+`substring`的第二个参数返回字符个数
+
+```js
+var stringValue = 'hello world';
+console.log(stringValue.slice(3)); // 'lo world'
+console.log(stringValue.substring(3)); // 'lo world'
+console.log(stringValue.substr(3)); // 'lo world'
+console.log(stringValue.slice(3, 7)); // 'lo w'
+console.log(stringValue.substring(3, 7)); // 'lo w'
+console.log(stringValue.substr(3, 7)); // 'lo world'
+```
+
+如果传值是负数的情况
+
+`slice()` 和 `substr()` 会将负数加字符串长度, 而 `substring()`将所有负数参数默认为0
+
+`substr()`将第二个负数参数转为0，`slice()`会将第二个负数加字符串长度
+
+```js
+var stringValue = 'hello world';
+console.log(stringValue.slice(-3)); // 'rld'   -3 + 11 = 8 相当于  stringValue.slice(8)
+console.log(stringValue.substring(-3)); //'hello world'
+console.log(stringValue.substr(-3)); // 'rld'  -3 + 11 = 8 相当于  stringValue.substr(8)
+console.log(stringValue.slice(3, -4)); //'lo w' -4 + 11 = 7 相当于 stringValue.slice(3, 7)
+console.log(stringValue.substring(3, -4)); //'hel' 相当于stringValue.substring(3, 0)， 但实际这个方法会将较大的值放在结束位置stringValue.substring(0, 3)
+console.log(stringValue.substr(3, -4)); // '' 第三个位置返回0个参数
+```
+
+- 字符串位置
+
+`indexOf()`（前向后） 和 `lastIndexOf()` （从后向前）从一个字符串中搜索给定的子字符串，第二个参数是从那个位置之后开始搜索
+
+
+```js
+var stringValue1 = "Lorem ipsum dolor sit amet, consectetur adipisicing elit"; var positions = new Array();
+var pos = stringValue1.indexOf("e");
+while(pos > -1){
+    positions.push(pos);
+    pos = stringValue1.indexOf("e", pos + 1); // 位置每次加1，确保从上次搜索之后找起
+}
+console.log(positions);
+```
+
+- `trim()` 删除前置后置的所有空格  `str.trim()`
+
+ 
+-  `toLowerCase()` 转为小写 `toUpperCase()` 转为大写
+
+其中 `toLocaleLowerCase()` 和 `toLocaleUpperCase()`针对特定地区实现
+
+
+  
+ 
+ 
+
