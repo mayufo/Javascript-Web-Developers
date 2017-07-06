@@ -903,6 +903,132 @@ console.log(text.replace(/(.at)/g, 'world($1)'));  // world(cat), world(bat), wo
 
 `$&` 匹配整个模式的子字符串 RegExp.lastMatch相同
 
+`$'` 匹配之前的子字符串 RegExp.leftContext的值相同
 
+"$`" 匹配之前的子字符串 RegExp.rightContext的值相同
+
+`$n` 匹配第n个捕获组的子字符串。n等于0-9，`$1` 匹配第一个捕获组的子字符串
+
+`$nn` nn个捕获组的子字符串等于01-99
+
+```js
+var text = 'cat, bat, sat, fat';
+result = text.replace(/(.at)/g, 'word($1)');
+console.log(text.replace(/(.at)/g, 'world($1)'));  // world(cat), world(bat), world(sat), world(fat)
+```
+
+第二个字符串参数可以是一个函数，
+- 在只有一个匹配项的时候，这个函数可以有3个参数 模式的匹配项、模式匹配项在字符串的位置和原始字符串
+- 在有多个匹配项的时候，参数依次是模式的匹配项，后两个参数依然是匹配项字符串的位置和原始字符串
+
+```js
+function htmlEscape(text) {
+    return text.replace(/[<>"&]/g, function (match, pos, originalText) {
+        switch (match) {
+            case '<':
+                return '&lt;';
+            case '>':
+                return '&gt;';
+            case '&':
+                return '&amp;';
+            case '\"':
+                return "&quot;";
+        }
+    })
+}
+console.log(htmlEscape("<p class=\"greeting\">Hello world!</p>")); //&lt;p class=&quot;greeting&quot;&gt;Hello world!&lt;/p&gt;
+```
  
+`split` 可以指定分隔符讲一个字符串分割成多个字符串，并将结果放在一个数组中，分隔符可以是字符串，也可以是 `RegExp`,第二个参数可以指定数组的大小
+
+```js
+
+var colorText = 'red, blue,green,yellow';
+console.log(colorText.split(','));  //["red", "blue", "green", "yellow"]
+console.log(colorText.split(',', 2)); //["red", "blue"]
+console.log(colorText.split(/[^\,]+/)); //["", ",", ",", ",", ""]
+```
+
+- `localCompare()`方法 比较两个字符串,逐个字符对比，并返回 指定参数 > 对比的 大于返回 1， 等于 返回 0 小于返回-1
+
+大写字母 > 小写字母
+
+```js
+console.log(stringvalue.localeCompare('brick'));  // 1
+console.log(stringvalue.localeCompare('yellow')); //0
+console.log(stringvalue.localeCompare('zoo'));  //-1
+```
+
+ `localeCompare（）`的返回值决定实现，最好写在函数里面使用
+ 
+- `fromCharCode()` 方法
+
+接收一或多个字符编码转为字符串
+
+```js
+console.log(String.fromCharCode(104, 101, 108, 108, 111)); // hello
+```
+
+## 单体内置对象
+
+不必显示的实例化内置 如 `Object`、 `Array`、`String`
+
+还有两个单独的内置对象 `Global` `Math`
+
+### Global对象
+
+不属于任何对象的属性和方法，最终都是它的属性和方法
+
+- URI编码方法
+
+`encodeURI()`和 `encodeURIComponent()`对URL进行编码，发送给浏览器，编码后不包含某些字符，比如空格
+
+`encodeURI()` 不会对特殊的冒号、问号、井号等编码，而 `encodeURIComponent()`可以对这些编码
+
+```js
+var uri = 'http://www.wrox.com/illegal value.htm#start';
+
+console.log(encodeURI(uri)); //http://www.wrox.com/illegal%20value.htm#start
+
+console.log(encodeURIComponent(uri));  // http%3A%2F%2Fwww.wrox.com%2Fillegal%20value.htm%23start
+```
+
+`decodeURI()`和 `decodeURIComponent()`分别对应解码解码，`decodeURI()` 无法解析编码过的冒号、问号、井号
+
+
+### eval() 方法
+
+当解析器发现调用这个方法，会将传入的参数当做世界的语句解析，然后执行结果插入到原来位置，可以引用在包含环境中定义的变量
+
+```js
+var msg = 'hello world';
+eval(console.log(msg)); // hello world
+
+eval("function sayhi() {console.log('hi')}"); //hi
+sayhi();
+```
+
+`eval`创建的任何变量或函数都不会被提升，因为被包含在字符串中，`eval()`执行的时候创建
+
+严格模式下外部访问不到 `eval()`创建的函数或者变量
+
+- Global对象属性
+
+`undefined`、 `NaN`、 `Infinity` `Array` `Function` ...
+
+- window 对象
+
+```js
+var color1 =  'red';
+console.log(window.color1);
+```
+
+```js
+var global = function () {
+    return this;
+}();
+```
+
+在没有给定`this`值的情况下，无论如何`call()`或`apply()`,this值等于 `Global`对象
+
 

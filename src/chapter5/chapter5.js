@@ -337,9 +337,59 @@ console.log(execStr);
 
 
 console.log(text.search(/at/));
-
 console.log(text.replace('at', 'ond')); // cond,bat,sat,bat
-
 console.log(text.replace(/at/g, 'ond'));  // cond,bond,sond,fond
-
 console.log(text.replace(/(.at)/g, 'world($1)'));  // world(cat), world(bat), world(sat), world(fat)
+
+
+function htmlEscape(text) {
+    return text.replace(/[<>"&]/g, function (match, pos, originalText) {
+        switch (match) {
+            case '<':
+                return '&lt;';
+            case '>':
+                return '&gt;';
+            case '&':
+                return '&amp;';
+            case '\"':
+                return "&quot;";
+        }
+    })
+}
+
+console.log(htmlEscape("<p class=\"greeting\">Hello world!</p>")); //&lt;p class=&quot;greeting&quot;&gt;Hello world!&lt;/p&gt;
+
+var colorText = 'red, blue,green,yellow';
+console.log(colorText.split(','));  //["red", "blue", "green", "yellow"]
+console.log(colorText.split(',', 2)); //["red", "blue"]
+console.log(colorText.split(/[^\,]+/)); //["", ",", ",", ",", ""]
+
+
+var stringvalue = 'yellow';
+
+console.log(stringvalue.localeCompare('brick'));
+console.log(stringvalue.localeCompare('yellow'));
+console.log(stringvalue.localeCompare('yalloa'));
+
+
+console.log(String.fromCharCode(104, 101, 108, 108, 111));
+
+var uri = 'http://www.wrox.com/illegal value.htm#start';
+
+console.log(encodeURI(uri)); //http://www.wrox.com/illegal%20value.htm#start
+
+console.log(encodeURIComponent(uri));  // http%3A%2F%2Fwww.wrox.com%2Fillegal%20value.htm%23start
+
+var msg = 'hello world';
+eval(console.log(msg));
+
+eval("function sayhi() {console.log('hi')}");
+sayhi();
+
+var color1 =  'red';
+console.log(window.color1);
+
+
+var global = function () {
+    return this;
+}();
