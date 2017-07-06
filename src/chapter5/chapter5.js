@@ -318,4 +318,28 @@ while(pos > -1){
     positions.push(pos);
     pos = stringValue1.indexOf("e", pos + 1);
 }
-console.log(positions);
+console.log(positions); // 3 24 32 35 52
+
+var text = 'cat, bat, sat, fat';
+var pattern = /.at/;
+
+var matches = text.match(pattern);
+console.log(matches.index);// 0
+console.log(matches[0]);// cat
+console.log(pattern.lastIndex); // 0
+console.log(matches); // ["cat", index: 0, input: "cat, bat, sat, fat"]
+
+var execStr = pattern.exec(text);
+console.log(execStr.index);// 0
+console.log(execStr[0]);// cat
+console.log(pattern.lastIndex); // 0
+console.log(execStr);
+
+
+console.log(text.search(/at/));
+
+console.log(text.replace('at', 'ond')); // cond,bat,sat,bat
+
+console.log(text.replace(/at/g, 'ond'));  // cond,bond,sond,fond
+
+console.log(text.replace(/(.at)/g, 'world($1)'));  // world(cat), world(bat), world(sat), world(fat)

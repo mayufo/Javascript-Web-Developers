@@ -807,9 +807,9 @@ var stringValue = 'hello';
 console.log(stringValue.concat('world')); // hello world
 ```
 
-- `+`通常字符串的拼接用的加好
+`+`通常字符串的拼接用的加好
 
-- `slice()` 、`substr()`和 `substring()` 都返回操作字符串的子字符串，第一个参数是开始位置，第二个参数是结束位置(不包含)。
+`slice()` 、`substr()`和 `substring()` 都返回操作字符串的子字符串，第一个参数是开始位置，第二个参数是结束位置(不包含)。
 
 `substring`的第二个参数返回字符个数
 
@@ -854,15 +854,55 @@ while(pos > -1){
 console.log(positions);
 ```
 
-- `trim()` 删除前置后置的所有空格  `str.trim()`
+`trim()` 删除前置后置的所有空格  `str.trim()`
 
  
--  `toLowerCase()` 转为小写 `toUpperCase()` 转为大写
+`toLowerCase()` 转为小写 `toUpperCase()` 转为大写
 
 其中 `toLocaleLowerCase()` 和 `toLocaleUpperCase()`针对特定地区实现
 
+- 字符串的模式匹配方法
 
+`match()`只接受一个参数，要么是一个正则表达式，要么是一个 `RegExp`,返回一个数组,该数组第一项是与之匹配的字符串，和正则中 `exec()`用法相似
+
+```js
+var text = 'cat, bat, sat, fat';
+var pattern = /.at/;
+var matches = text.match(pattern);
+console.log(matches.index);// 0
+console.log(matches[0]);// cat
+console.log(pattern.lastIndex); // 0
+console.log(matches); // ["cat", index: 0, input: "cat, bat, sat, fat"]
+
+var execStr = pattern.exec(text);
+console.log(execStr.index);// 0
+console.log(execStr[0]);// cat
+console.log(pattern.lastIndex); // 0
+console.log(execStr);// ["cat", index: 0, input: "cat, bat, sat, fat"]
+```
+
+`search()`与 `match()`方法的参数相同，返回字符创中第一个匹配项的索引
+
+```js
+var text = 'cat, bat, sat, fat';
+console.log(text.search(/at/));
+```
+`replace()`替换字符串的操作，接受两个参数，第一个参数可以是正则或者字符串，第二个参数可以是字符串或者一个函数，如果想全局替换，就要提供全局 `g`
+
+```js
+console.log(text.replace('at', 'ond')); // cond,bat,sat,bat
+
+console.log(text.replace(/at/g, 'ond'));  // cond,bond,sond,bond
+```
   
+第二个字符串的参数还可以使用一些特殊的字符序列
  
+```js
+console.log(text.replace(/(.at)/g, 'world($1)'));  // world(cat), world(bat), world(sat), world(fat)
+```
+
+`$&` 匹配整个模式的子字符串 RegExp.lastMatch相同
+
+
  
 
