@@ -393,3 +393,35 @@ console.log(window.color1);
 var global = function () {
     return this;
 }();
+
+console.log(Math.max(22, 33, 4, 55));
+
+console.log(Math.max.apply(Math, [22, 33, 4, 55]));
+
+console.log(Math.floor(Math.random() * 9 + 2));
+
+function selectFrom(lowerValue, upperValue) {
+    var choices = upperValue - lowerValue + 1;
+    return Math.floor(Math.random() * choices + lowerValue);
+}
+
+console.log(selectFrom(2, 9));
+
+var colors8 = ["red", "green", "blue", "yellow", "black", "purple", "brown"];
+console.log(colors8[selectFrom(0, colors8.length - 1)]);
+
+function upset (num) {
+    var arr = [];
+    for(var i = 0; i < num; i++) {
+        arr[i] = i;
+    }
+
+    arr.sort(function () {
+        return 0.5 - Math.random()
+    });
+
+    var str = arr.join();
+    return (str)
+}
+
+console.log(upset(100));

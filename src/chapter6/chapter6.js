@@ -1,128 +1,238 @@
-console.log(sum(10, 10));
-function sum(num1, num2) {
-    return num1 + num2;
-}
+var person = {};
+Object.defineProperty(person, 'name', {
+    writable: false,
+    value: 'Nicholas'
+})
+
+var person1 = {};
+Object.defineProperty(person1, 'name', {
+    configurable: false,
+    value: 'Nicholas1'
+});
 
 
-// console.log(sum1(10, 10));
+console.log(person.name);
 
-var sum1 = function (num1, num2) {
-    return num1 + num2;
-}
+var book = {
+    _year: 2004,
+    edition: 1
+};
 
-
-function callSomeFunction(someFunction, someArgument) {
-    return someFunction (someArgument);
-}
-function add10(num) {
-    return num + 10;
-}
-
-var result = callSomeFunction (add10, 10);
-console.log(result);
-
-function createComparisonFunction (propertyName) {
-    return function (object1, object2) {
-        var value1 = object1[propertyName];
-        var value2 = object2[propertyName];
-
-        if (value1 < value2) {
-            return -1
-        } else if (value1 > value2) {
-            return 1
-        } else {
-            return 0
+Object.defineProperty(book, 'year', {
+    get: function () {
+        return this._year;
+    },
+    set: function (newValue) {
+        if (newValue > 2004) {
+            this._year = newValue;
+            this.edition += newValue - 2004;
         }
     }
+});
+
+book.year = 2005;
+console.log(book.edition); //2
+
+var book1 = {};
+
+Object.defineProperties(book1, {
+    _year: {
+        value: 2004
+    },
+    edition: {
+        value: 1
+    },
+    year: {
+        get: function () {
+            return this._year
+        },
+        set: function (newValue) {
+            if (newValue > 2004) {
+                this._year = newValue;
+                this.edition += newValue - 2004;
+            }
+        }
+    }
+})
+
+var descriptor = Object.getOwnPropertyDescriptor(book1, '_year');
+
+console.log(descriptor.value);
+console.log(descriptor.configurable);
+
+
+function createPerson(name, age, job) {
+    var o = new Object();
+    o.name = name;
+    o.age = age;
+    o.job = job;
+    o.sayName = function () {
+        console.log(this.name);
+    }
+    return o;
 }
 
-var data = [{name: 'may', age: '18'}, {name: 'zhang', age: '28'}];
-data.sort(createComparisonFunction('name'));
-data.sort(createComparisonFunction('age'));
-console.log(data[0].name); //may
-console.log(data[0].age); // 18
+var person1 = createPerson('may', '18', 'engineer');
+var person2 = createPerson('pig', '29', 'work');
 
-
-function factorial(num) {
-    if(num <= 1) {
-        return 1
-    } else {
-        return num * factorial(num - 1)
+function Person(name, age, job) {
+    this.name = name;
+    this.age = age;
+    this.job = job;
+    this.sayName = function () {
+        console.log(this.name);
     }
 }
 
+var person3 = new Person('may', '18', 'engineer');
+var person4 = new Person('pig', '29', 'work');
 
-function outer() {
-    inner();
+console.log(person3.constructor == Person);
+
+console.log(person3 instanceof Person);
+console.log(person3 instanceof Object); //true
+
+var person = new Person('may', '18', 'engineer');
+person.sayName(); // 'may'
+
+Person('pig', '29', 'Doctor');
+window.sayName(); // 'pig'
+
+var o = new Object();
+Person.call(o, 'Kristen', 25, 'Nurse');
+o.sayName(); // 'Kristen'
+
+function Person(name, age, job) {
+    this.name = name;
+    this.age = age;
+    this.job = job;
+    this.sayName = sayName;
 }
 
-function inner() {
-    console.log(inner.caller, 111);
-}
-
-outer();
-
-
-function outer1() {
-    inner1();
-}
-
-function inner1() {
-    console.log(inner1.caller, 222);
-}
-
-outer1();
-
-function sayName(name) {
-    conole.log(name);
-}
-
-console.log(sayName.length);
-
-function sum(num1, num2) {
-    return num1 + num2;
-}
-
-function callSum1(num1, num2) {
-    return sum.apply(this, arguments);
-}
-
-function callSum2(num1, num2) {
-    return sum.apply(this, [num1, num2]);
-}
-
-function callSum3(num1, num2) {
-    return sum.call(this, num1, num2);
+function sayName() {
+    console.log(this.name);
 }
 
 
-console.log(callSum1(10, 10)); //20
-console.log(callSum2(10, 10)); //20
-console.log(callSum3(10, 10)); //20
+function Person2() {
 
-window.color = 'red';
-
-var o = {color: 'blue'};
-
-function sayColor() {
-    console.log(this.color)
 }
 
-console.log(sayColor()); // red
+Person2.prototype.name = 'may';
+Person2.prototype.age = 29;
+Person2.prototype.sayName = function () {
+    console.log(this.name)
+};
 
-console.log(sayColor(this)); //red
+var person11 = new Person2();
+person11.sayName();
 
-console.log(sayColor(window)); //red
+var person22 = new Person2();
+person22.sayName();
 
-console.log(sayColor(o)); //blue
+console.log(Person2.prototype.constructor);  //Person2
+
+console.log(Person2.prototype.isPrototypeOf(person11));
+console.log(Person2.prototype.isPrototypeOf(person22));
+
+console.log(Object.getPrototypeOf(person11) == Person2.prototype); //true
+console.log(Object.getPrototypeOf(person11).name); //may
+
+console.log(person11.name, 3);
+
+person11.name = 'Lucy';
+
+console.log(person11.name, 4);
+
+delete person11.name;
+
+console.log(person11.name, 5);
+
+person22.name = 'Lily';
+
+console.log(person11.hasOwnProperty('name'));
+console.log(person22.hasOwnProperty('name'));
 
 
-
-window.color = 'red';
-var o = {color : 'blue'};
-function sayColor() {
-    console.log(this.color);
+function hasPrototypeProperty(object, name) {
+    return !object.hasOwnProperty(name) && (name in object);
 }
 
-var objectSayColor = sayColor.bind(o);
-objectSayColor(); //blue
+person22.name = 'mm';
+
+console.log(hasPrototypeProperty(person22, 'name')); // false
+
+console.log(Object.keys(Person2.prototype)); // name, age, sayName
+
+var p1 = new Person2();
+p1.name = 'pig';
+p1.age = 29;
+console.log(Object.keys(p1));
+
+console.log(Object.getOwnPropertyNames(Person2.prototype));
+
+
+function Person4() {
+
+}
+
+Person4.prototype = {
+    name: 'may1',
+    age: 17
+}
+
+var friend = new Person4();
+
+console.log(friend instanceof Object);
+console.log(friend instanceof Person4);
+console.log(friend.constructor == Person4);
+console.log(friend.constructor == Object);
+
+Object.defineProperty(Person4.prototype, 'constructor', {
+    enumerable: false,
+    value: Person4
+});
+
+function Person5() {
+}
+var friend = new Person5();
+
+Person5.prototype.sayHi = function () {
+    console.log('hi');
+}
+
+console.log(friend.sayHi());// hi
+
+Person5.prototype = {
+    constructor: Person5,
+    name: 'may',
+    age: 18,
+    sayName: function () {
+        console.log(this.name)
+    }
+};
+
+// friend.sayName();
+
+function Person6(name, age, job) {
+    this.name = name;
+    this.age = age;
+    this.job = job;
+    this.friends = ['may', 'emma']
+}
+
+Person6.prototype = {
+    constructor: Person,
+    sayName: function () {
+        console.log(this.name);
+    }
+}
+
+var person61 = new Person6('lily', 18, 'work');
+var person62 = new Person6('lucy', 19, 'doctor');
+
+person61.friends.push('van')
+console.log(person61.friends); // ['may', 'emma', 'van']
+console.log(person62.friends);  // ['may', 'emma']
+person61.sayName(); //lily
+person62.sayName(); //lucy

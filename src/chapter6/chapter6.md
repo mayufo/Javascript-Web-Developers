@@ -1,231 +1,431 @@
 # 面向对象的程序设计
 
+每一个对象都是基于一个引用类型创建的
 
-## Function 类型
+## 理解对象
 
-- 函数声明
+早期用的`Object`实例创建，现在更多使用字面量创建
+
+### 属性类型
+
+`数据属性`和`访问属性`
+
+- 数据属性
+
+**Configurable** 表示能否通过delete删除属性从而重新定义属性，能否修改属性的特性，能否把属性修改为访问器属性，默认true
+**Enumerable** 能否通过 for-in循环返回属性，默认true
+**Writable** 能否修改属性的值，默认true
+**Value** 这个属性的数据值
+
+`Object.defineProperty()`修改属性默认的特性，接受三个参数属性所在的对象，属性的名字，一个描述符对象
+
 ```js
-function sum (num1, num2) {
-    return num1 + num2;
-}
+var person = {};
+Object.defineProperty(person, 'name', {
+    writable: false,
+    value: 'Nicholas'
+})
+
+console.log(person.name); // Nicholas  修改属性为只读
 ```
+把`configurable`设置为false表示不能从属性中删除属性，一旦把属性定义为不可配置的，就不能再把它定义回可配置的否则报错
 
-- 在使用函数表达式定义函数时，没有必要使用函数名
+调用 `Object.defineProperty()`方法如果不指定，默认是false
 
-```js
-var sum = function(sum1, sum2) {
-  return num1 + num2;
-}
-```
-- Function构造函数 (不推荐)
+- 访问器属性
 
-```js
-var sum = new function('num1', 'num2', 'return num1 + num2')
-```
+包含一对 `getter`和`setter`, 取值访问 `getter`,写入调用 `setter` 访问器有如下4个属性
 
-函数名仅仅只指向函数的指针
-使用不带圆括号的函数名是访问函数指针，而非调用函数
+**Configurable** 删除属性重新定义属性，能否修改，能否修改为数据属性
+**Enumerable** 能否通过for-in循环
+**Get** 读取属性
+**Set** 写入属性
 
-### 没有重载
-
-同名函数的第二个函数，会覆盖引用第一个函数的变量
-
-
-### 函数声明与函数表达式
-
-解析器在执行加载数据时，函数声明会先被读取声明，并使其在执行任何代码之前可用，表达式等到解析器执行到他所在的代码行，才会被解析
+访问器也需要通过 `Object.defineProperty()`来定义
 
 ```js
-console.log(sum(10, 10));  // 被提前读取声明
-function sum(num1, num2) {
-    return num1 + num2;
-}
-```
-
-```js
-// console.log(sum1(10, 10));  这里会产生错误，初始化语句不会提前读取函数的引用
-
-var sum1 = function (num1, num2) {
-    return num1 + num2;
-}
-```
-
-
-### 作为值的函数
-
-像传递参数一样把函数传递给另一个函数，将一个函数作为另一个函数的结果返回
-
-```js
-function callSomeFunction(someFunction, someArgument) {
-    return someFunction (someArgument);
-}
-function add10(num) {
-    return num + 10;
-}
-
-var result = callSomeFunction (add10, 10);
-console.log(result); //10
-```
-
-从一个函数中返回一个函数
-
-```js
-
-function createComparisonFunction (propertyName) {
-    return function (object1, object2) {
-        var value1 = object1[propertyName];
-        var value2 = object2[propertyName];
-
-        if (value1 < value2) {
-            return -1
-        } else if (value1 > value2) {
-            return 1
-        } else {
-            return 0
+Object.defineProperty(book, 'year', {
+    get: function () {
+        return this._year;
+    },
+    set: function (newValue) {
+        if(newValue > 2004) {
+            this._year = newValue;
+            this.edition += newValue - 2004;
         }
     }
-}
+});
 
-var data = [{name: 'may', age: '18'}, {name: 'zhang', age: '28'}];
-data.sort(createComparisonFunction('name'));
-data.sort(createComparisonFunction('age'));
-console.log(data[0].name); //may
-console.log(data[0].age); // 18
+book.year = 2005;
+console.log(book.edition); //2
 ```
+`_year`的下划线，用于表示只能通过对象方法访问的属性
 
-### 函数内部属性
+不要在`getter`中尝试写，也不要在 `setter`中尝试读
 
-- argument 保存函数参数，此对象有个 `callee的属性`，指向拥有这个 `arguments`对象的函数
+`__defineGetter__()`和 `__defineSetter()__` 两个非标准的，用于创建访问属性
 
-计算阶乘
+不支持 `Object.defineProperty()`方法的浏览器不能修改`Configurable`和`Enumerable`
+
+### 定义多个属性
+
+`Object.defineProperties()`
+
+### 读取属性的特性
+
+`Object.getOwnPropertyDescriptor()`取得给定属性的描述符，接受两个参数：属性所在对象和要读取其描述符的属性名称，返回一个对象，只能直接用于实例对象或者原型对象
 
 ```js
-function factorial(num) {
-    if(num <= 1) {
-        return 1
-    } else {
-        return num * factorial(num - 1)
+var book1 = {};
+
+Object.defineProperties(book1, {
+    _year: {
+        value: 2004
+    },
+    edition: {
+        value: 1
+    },
+    year: {
+        get: function () {
+            return this._year
+        },
+        set: function (newValue) {
+            if(newValue > 2004) {
+                this._year = newValue;
+                this.edition += newValue - 2004;
+            }
+        }
+    }
+})
+
+var descriptor = Object.getOwnPropertyDescriptor(book1, '_year');
+
+console.log(descriptor.value);
+console.log(descriptor.configurable);
+
+```
+
+## 创建对象
+
+### 工厂模式
+
+```js
+function createPerson (name, age, job) {
+    var o = new Object();
+    o.name = name;
+    o.age = age;
+    o.job = job;
+    o.sayName = function () {
+        console.log(this.name);
+    }
+    return o;
+}
+
+var person1 = createPerson('may', '18', 'engineer');
+var person2 = createPerson('pig', '29', 'work');
+```
+
+### 构造函数模式
+
+创建自定义的构造函数，从而定义自定义对象的属性和方法
+```js
+function Person(name, age, job) {
+    this.name = name;
+    this.age = age;
+    this.job = job;
+    this.sayName = function () {
+        console.log(this.name);
     }
 }
+
+var person3 = new Person('may', '18', 'engineer');
+var person4 = new Person('pig', '29', 'work');
 ```
 
-但是如果函数的执行和函数名就仅仅耦合在一起, 可以使用 `arguments.callee`
+如果是构造函数，函数名的第一个字母要大写
 
 ```js
-function factorial(num) {
-    if(num <= 1) {
-        return 1
-    } else {
-        return num * arguments.callee(num - 1)
+console.log(person3.constructor == Person); //true
+console.log(person3 instanceof Person); //true
+console.log(person3 instanceof Object); //true
+```
+
+- 将构造函数当做函数
+
+任何函数只要通过 `new`调用，就可以当做构造函数，
+
+```js
+// 构造函数使用
+var person = new Person('may', '18', 'engineer');
+person.sayName(); // 'may'
+
+// 普通函数调用
+Person('pig', '29', 'Doctor');
+window.sayName(); // 'pig'
+
+// 在另一个对象的作用域中调用
+var o = new Object();
+Person.call(o, 'Kristen', 25, 'Nurse');
+o.sayName(); // 'Kristen'
+```
+
+不通过 `new`调用，属性和方法都添加到 `window`对象上
+
+- 构造函数的问题
+
+每个方法都要在每个实例重新创建一遍，不同实例上的同名函数是不相等的
+
+```js
+console.log(person1.sayName == person2.sayName()); //false
+```
+
+可以通过吧函数定义转移到构造函数外部来解决这个问题
+
+```js
+
+function Person(name, age, job) {
+    this.name = name;
+    this.age = age;
+    this.job = job;
+    this.sayName = sayName;
+}
+
+function sayName () {
+    console.log(this.name);
+}
+```
+### 原型模式
+
+每个函数都有一个`prototype`属性是一个指针，指向一个对象，由特定类型的所有实例共享的属性和方法。
+
+使用 `prototype`可以让所有对象实例共享它素包含的属性和方法
+
+```js
+function Person2() {
+
+}
+
+Person2.prototype.name = 'may';
+Person2.prototype.age = 29;
+Person2.prototype.sayName = function () {
+    console.log(this.name)
+};
+
+var person11 = new Person2();
+person11.sayName(); // 'may'
+
+var person22 = new Person2();
+person22.sayName(); // 'may'
+```
+
+构造函数成了空函数，仍可以通过构造函数创建新对象，新对象的属性和方法是由所有实例共享的
+
+- 理解原型对象
+
+只要创建一个新函数，函数创建一个 `prototype`属性，属性指向函数的原型对象
+所有原型对象会自动获得一个 `constructor`属性，这个属性指向 `prototype`属性所在函数的指针。至于其他方法都是来自 `Object`
+
+前面的例子中
+
+```js
+Person2.prototype.constructor //指向Person2
+```
+
+调用构造函数创建新实例的时候，该实例内部将包含一个指针，指向构造函数的原型对象
+
+在众多浏览器上都支持一个属性 `__proto__` ,从而实现属性对脚本不可见
+
+`prototype`存在于实例于构造函数的原型对象之间，而不是存在于实例于构造函数之间
+
+![](images/jingtong_6.png)
+
+`isPrototypeOf()`是否指向某个原始对象
+
+```js
+console.log(Person2.prototype.isPrototypeOf(person11)); // true
+console.log(Person2.prototype.isPrototypeOf(person22)); // true
+```
+
+`Object.getPrototype` 返回 `[[prototype]]`的值
+
+```js
+console.log(Object.getPrototypeOf(person11) == Person2.prototype); //true
+console.log(Object.getPrototypeOf(person11).name); //may
+```
+
+代码读取某个对象的属性时，搜索首先从实例对象本身开始，如果实例中找到具体名字的属性，返回改属性的值，如果没有，则继续搜索指针指向的原型对象。
+
+`constructor`该属性也是共享，可以通过对象实例访问到,但是不能改写原型中的值
+
+在实例中添加一个属性，该属性与原型中的一个属性同名，该属性就会屏蔽原型中的那个属性，它会组织我们访问原型中的属性而不会修改，如果想解除阻止，可以使用 `delete`删除实例中的属性
+
+```js
+console.log(person11.name, 3); //may
+
+person11.name = 'Lucy';
+
+console.log(person11.name, 4);// Lucy
+
+delete person11.name;
+
+console.log(person11.name, 5); // may
+```
+
+`hasOwnProperty()`可以检验一个属性是存在实例中还是原型中，在给定属性存在这个实例中返回true
+```js
+person22.name = 'Lily';
+console.log(person11.hasOwnProperty('name')); // false 来自原型
+console.log(person22.hasOwnProperty('name')); // true 来自实例
+```
+
+- 原型与`in`操作符
+
+`in`操作符会在通过对象访问给定属性时返回true.无论是实例还是原型，返回的都是可枚举的（enumerated）
+
+```js
+function hasPrototypeProperty(object, name) {
+    return !object.hasOwnProperty(name) && (name in object);
+}
+
+console.log(hasPrototypeProperty(person22, 'name')); // false
+```
+
+`hasPrototypeProperty()` 可以确定该属性有没有用原型中的属性, 即使原型中有这个属性，但是实例中也有这个属性，false 就是没有用
+
+早期IE中有个bug,比如我们定义个`toString`方法，但是这个方法不会被 `for..in`返回，这是因为IE中默认原型的 `toString()`方法被打上了值为false的不可枚举标志
+
+取得对象上所有可枚举的属性 `Object.keys()`，接收一个对象作为参数,得出顺序出现的结果
+
+```js
+console.log(Object.keys(Person2.prototype)); // 'name, age, sayName'
+var p1 = new Person2();
+p1.name = 'pig';
+p1.age = 29;
+console.log(Object.keys(p1)); // 'name,age'
+```
+
+
+`Object.getOwnPropertyName()`无论是否枚举，看所有实例属性
+```js
+console.log(Object.getOwnPropertyNames(Person2.prototype)); // 'constructor,name,age,sayName'
+```
+
+`Object.keys()`和 `Object.getOwnPropertyNames()`可以替代 `for-in`
+
+- 更简单的原型语法
+
+可以通过字面量的方法重写整个原型对象
+
+```js
+function Person4 () {}
+Person4.prototype = {
+    name: 'may1',
+    age: 17
+}
+```
+这样等于字面量形势创建新对象， `constructor`属性不会指向 `Person4`,尽管 `instanceof`操作还能返回正确的结果，但`constructor`是无法确定对象的类型
+
+```js
+console.log(friend instanceof Object); //true
+console.log(friend instanceof Person4);//true
+console.log(friend.constructor == Person4); //false
+console.log(friend.constructor == Object);//true
+```
+
+因此如果用字面量，需要重设 `constructor`
+```js
+function Person4 () {}
+Person4.prototype = {
+    constructor:　Person4,
+    name: 'may1',
+    age: 17
+}
+```
+
+字面量设置的 `constructor`属性的可枚举会被设置为`true`,原生情况是不可枚举的,应该如下设置
+
+```js
+Object.defineProperty(Person4.prototype, 'constructor', {
+    enumerable: false,
+    value: Person4
+});
+```
+
+- 原型的动态性
+
+```js
+function Person5() {
+}
+var friend = new Person5();
+
+Person5.prototype.sayHi = function () {
+    console.log('hi');
+}
+
+console.log(friend.sayHi());// hi
+```
+
+实例与原型之间是松散关系，连接只是一个指针，随时为原型添加属性和方法，能够立即在实例对象上反应出来，如果调用构造函数时为实例添一个指向最初原始 `Prototype`指针，把原型修改为另外的对象，相当于切断与原型联系
+
+```js
+function Person5() {
+}
+var friend = new Person5();
+
+Person5.prototype = {
+    constructor: Person5,
+    name: 'may',
+    age: 18,
+    sayName: function () {
+        console.log(this.name)
+    }
+};
+friend.sayName(); //error
+```
+
+实例中的指针只指向原型
+
+![](images/jingtong_7.png)
+
+- 原生对象的原型
+
+通过原生对象的原型，不仅可以取得默认方法方法的引用，还可以定义新的方法（不推荐）
+
+- 原生对象的问题
+
+由于共享的本质，在实例上添加一个同名属性，可以隐藏原型中的对应属性
+
+### 组合使用构造函数模式和原型模式
+
+创建自定义类型最常见方式，组合使用构造函数与原型模式
+
+```js
+
+// 实例属性在构造函数定义
+function Person6(name, age, job) {
+    this.name = name;
+    this.age = age;
+    this.job = job;
+    this.friends = ['may', 'emma']
+}
+
+// 共享属性 原型定义 
+Person6.prototype = {
+    constructor: Person,
+    sayName: function () {
+        console.log(this.name);
     }
 }
+
+var person61 = new Person6('lily', 18, 'work');
+var person62 = new Person6('lucy', 19, 'doctor');
+
+person61.friends.push('van')
+console.log(person61.friends); // ['may', 'emma', 'van']
+console.log(person62.friends);  // ['may', 'emma']
+person61.sayName(); //lily
+person62.sayName(); //lucy
 ```
+因此 `friends`输出可以在不同的数组
 
-- `this` 引用函数执行的环境对象
-
-函数名仅仅是一个包含指针的变量
-
-- `caller`  保存着调用当前函数的函数的引用，如果在全局作用域中调用当前函数，值为`null`
-
-```js
-function outer() {
-    inner();
-}
-
-function inner() {
-    console.log(inner.caller, 111); // 也可可以写成console.log(argument.callee.caller, 111);
-}
-
-outer();
-//  function outer() {
-//       inner();
-//    } 111
-```
-
-严格模式中访问 `argument.callee`会错误
-
-`argument.caller` 严格模式错误，非严格模式`undefined`
-严格模式不能为函数的caller赋值
-
-### 函数属性和方法
-
-每个函数都包含两个属性
-
-- length  表示函数希望接收的参数个数
-
-```js
-function sayName(name) {
-    conole.log(name);
-}
-
-console.log(sayName.length); //1
-```
-
-- prototype 保存所有实例方法的真正所在 不可枚举，使用 `for in`无法发现
-
-每个函数还包含两个非继承方法 
-在特定的作用域中调用函数，设置函数体内`this`对象的值
-- apply() 接收两个参数，一个是其中运行函数的作用域，第二个数参数数组，可以是 `Array`的实例，也可以是 `arguments`对象
-
-这里传入的`this`,实际就是 `window`对象
-```js
-function callSum1(num1, num2) {
-    return sum.apply(this, arguments);
-}
-
-function callSum2(num1, num2) {
-    return sum.apply(this, [num1, num2]);
-}
-
-console.log(callSum1(10, 10)); //20
-console.log(callSum2(10, 10)); //20
-
-```
-
-
-- call()
-
-```js
-function callSum3(num1, num2) {
-    return sum.call(this, num1, num2);
-}
-console.log(callSum3(10, 10)); //20
-```
-
-实际应用 - 扩充作用域，对象不需要与方法有任何耦合关系
-
-```js
-window.color = 'red';
-
-var o = {color: 'blue'};
-
-function sayColor() {
-    console.log(this.color)
-}
-
-console.log(sayColor()); // red
-
-console.log(sayColor(this)); //red
-
-console.log(sayColor(window)); //red
-
-console.log(sayColor(o)); //blue
-```
-
-- `bind()` 创建一个函数实例，`this`值会被绑定给传给 `bind()`函数的值
-
-```js
-window.color = 'red';
-var o = {color : 'blue'};
-function sayColor() {
-    console.log(this.color);
-}
-
-var objectSayColor = sayColor.bind(o);
-objectSayColor(); //blue
-```
-
-- `toLocaleString()`和`toString()`方法始终返回函数的代码，格式根据浏览器。`valueOf()`也只返回函数代码
-
-## 基本包装类型
 

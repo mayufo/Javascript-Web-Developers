@@ -1031,4 +1031,74 @@ var global = function () {
 
 在没有给定`this`值的情况下，无论如何`call()`或`apply()`,this值等于 `Global`对象
 
+### Math对象
+
+- Math对象的属性
+ 
+ `Math.E` 常量e的值
+ `Math.LN10` 10的自然对数
+ `Math.LN2` 2的自然对数
+ `Math.LOG2E` 以2为底的e的对数
+ `Math.LOG10E` 以10为底的e的对数
+ `Math.PI` pi的值
+ `Math.SQRT1_2` 1/2的平方根
+ `Math.SQRT2`  2的平方根
+ 
+- `min()` 和 `max()`
+ 
+```js
+console.log(Math.max(22, 33, 4, 55)); //55
+console.log(Math.max.apply(Math, [22, 33, 4, 55]));//55
+```
+
+- 舍入方法
+
+`Math.ceil()`向上舍入
+`Math.floor()` 向下舍入
+`Math.round()` 标准舍入
+
+- random() 方法
+
+值 = Math.floor(Math.random() * 可能值的总数(大数-小数+1) + 第一个可能的值)
+
+```js
+console.log(Math.floor(Math.random() * 9 + 2)); // 取 2 - 9的随机数
+```
+
+```js
+function selectFrom(lowerValue, upperValue) {
+    var choices = upperValue - lowerValue + 1;
+    return Math.floor(Math.random() * choices + lowerValue);
+}
+
+console.log(selectFrom(2, 9)); // 取 2 - 9的随机数
+```
+
+```js
+var colors8 = ["red", "green", "blue", "yellow", "black", "purple", "brown"];
+console.log(colors8[selectFrom(0, colors8.length - 1)]); //随机从数组取一个值
+```
+
+打乱数组
+```js
+function upset (num) {
+    var arr = [];
+    for(var i = 0; i < num; i++) {
+        arr[i] = i;
+    }
+
+    arr.sort(function () {
+        return 0.5 - Math.random()
+    });
+
+    var str = arr.join();
+    return (str)
+}
+
+console.log(upset(100));//23,31,2,26,4,13,29,38,46,43,55,66,76,36,44,60,32,91,27,69,79,54,37,63,34,95,64,28,49,14,30,15,71,18,84,40,11,8,50,85,98,45,56,70,20,62,24,94,39,65,0,22,35,68,77,7,61,12,10,74,6,67,52,3,72,90,41,21,81,19,86,51,17,82,75,59,78,53,93,83,57,9,5,87,33,58,73,42,89,47,96,88,99,48,80,92,16,1,97,25
+```
+
+- 其他方法
+
+![](../../assets/Javascript5.png);
 
