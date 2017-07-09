@@ -428,4 +428,273 @@ person62.sayName(); //lucy
 ```
 因此 `friends`输出可以在不同的数组
 
+### 动态原型模式
 
+通过检查某个应该存在的方法是否有效，来决定是否需要初始化原型
+```js
+if(typeof this.sayName != 'function') {
+    Person.prototype.sayName = function () {
+        console.log(this.name);
+    }
+}
+```
+
+除了使用 `typeof`还可以使用 `instanceof`
+
+### 寄生构造函数模式
+
+创建一个新对象，并以响应的属性和方法初始化对象，再返回对象
+```js
+function Person7(name, age, job) {
+    var o = new Object();
+    o.name = name;
+    o.age = age;
+    o.job = job;
+    o.sayName = function () {
+        console.log(this.name);
+    }
+
+    return o;
+}
+
+var friend = new Person7('may', 18, 'work');
+friend.sayName()
+```
+
+在特殊情况下使用，比如想创建有额外方法的特殊数组
+
+返回的对象与构造函数或与后遭函数的原型属性没有关系，构造函数返回的对象与构造函数外部创建的对象没有什么不同
+不能依赖 `instanceof`操作符来确定对象类型 （不推荐使用）
+
+### 稳妥构造函数模式
+
+适应于安全的环境，防止数据被其他程序修改使用。不引用 `this`,不适用 `new`
+
+```js
+function Person8(name, age, job) {
+    var o = new Object();
+    o.sayName = function () {
+        console.log(name);
+    }
+    return o;
+}
+
+var friend8 = Person8('may8', 18, 'work');
+friend8.sayName();
+```
+
+除了 `sayName()`方法，没有其他办法访问到 `name`的值， `instanceof`操作符对这种对象也没有意义
+
+## 继承
+
+多数语言支持两种继承：接口继承和实现继承
+
+接口继承是集成方法签名，实现继承继承实际的方法
+
+ECMAScript只支持实现继承
+
+### 原型链
+
+利用原型让一个引用类型继承另一个引用类型的属性和方法
+
+```js
+
+function SuperType() {
+    this.property = true;
+}
+
+SuperType.prototype.getSuperValue = function () {
+    return this.property;
+}
+
+function LongType() {
+    this.longProperty = false;
+}
+
+LongType.prototype = new SuperType();
+
+LongType.prototype.getLongValue = function () {
+    return this.longProperty
+};
+
+var instance = new LongType();
+
+console.log(instance.getSuperValue()); // true
+```
+
+搜索步骤： 搜索实例 -> 搜索LongType.prototype -> 搜索SuperType
+
+- 别忘记默认的原型
+
+所有引用类型默认继承Object,而继承也是通过原型链实现的
+
+![](images/jingtong_8.png)
+
+- 确定原型和实例的关系
+
+`instanceof`
+
+```js
+console.log(instance instanceof Object); //true
+console.log(instance instanceof SuperType); // true
+console.log(instance instanceof LongType); // true
+```
+
+
+`isPrototypeOf()` 是否指向某个原型
+
+```js
+console.log(Object.prototype.isPrototypeOf(instance));  //true
+console.log(SuperType.prototype.isPrototypeOf(instance)); //true
+console.log(LongType.prototype.isPrototypeOf(instance)); //true
+```
+
+- 谨慎定义方法
+
+给原型添加方法，一定放在替换原型语句之前
+
+
+```js
+
+function SuperType() {
+    this.property = true;
+}
+
+SuperType.prototype.getSuperValue = function () {
+    return this.property;
+}
+
+function LongType() {
+    this.longProperty = false;
+}
+
+LongType.prototype = new SuperType();
+
+SuperType.prototype.getSuperValue = function() {  // 重写方法
+  return false;
+}
+
+LongType.prototype.getLongValue = function () {
+    return this.longProperty
+};
+
+var instance = new LongType();
+
+console.log(instance.getSuperValue()); // false 
+```
+
+不能使用对象字面量创建原型方法，这样就重写了原型对象
+
+```js
+LongType.prototype = new SuperType();
+
+// 使用字面量添加，会导致上一行代码无效
+LongType.prototype = {
+   someOtherMethod: function() {
+     return false;
+   }
+}
+```
+
+- 原型链的问题
+
+所有引用类型原型链都会实例共享
+
+```js
+function Color() {
+    this.colors = ['red', 'green'];
+}
+
+function Other() {
+}
+
+
+Other.prototype = new Color();
+
+var instance1 = new Other();
+instance1.colors.push('pink');
+console.log(instance1.colors); // ["red", "green", "pink"]
+
+var instance2 = new Other();
+
+console.log(instance2.colors,22); //["red", "green", "pink"]
+```
+
+创建子类型的实例时，不能向超类型的构造函数中传递参数
+
+### 借用构造函数
+
+在子类构造函数的内部调用超类型构造函数，通过 `apply`和 `call`
+
+```js
+function SuperType2() {
+    this.colors = ['red', 'green']
+}
+
+function SubType2() {
+    SuperType2.call(this);
+}
+
+var instances21 = new SubType2();
+instances21.colors.push('pink')
+console.log(instances21.colors); // ["red", "green", "pink"]
+
+var instances22 = new SubType2();
+console.log(instances22.colors); //["red", "green"]
+```
+
+- 传递参数
+
+```js
+
+function SubType(){
+    SuperType.call(this, "Nicholas");    
+    this.age = 29;
+}
+```
+
+- 借用构造函数的问题
+
+方法都构造函数中定义，函数复用无从谈起
+
+### 组合继承
+
+```js
+
+function SuperType3(name) {
+    this.name = name;
+    this.colors = ['red','green']
+}
+
+SuperType3.prototype.sayName = function () {
+    console.log(this.name);
+}
+
+function SubType3(name, age) {
+    // 继承属性
+    SuperType3.call(this, name);
+    this.age = age;
+}
+
+// 继承方法
+SubType3.prototype = new SuperType3()
+SubType3.prototype.constructor = SubType3;
+SubType3.prototype.sayAge = function () {
+    console.log(this.age);
+};
+
+
+var instance31 = new SubType3('MAY', 18);
+instance31.colors.push('pink');
+console.log(instance31.colors); // ["red", "green", "pink"]
+instance31.sayName(); // 'MAY'
+instance31.sayAge(); // 18
+
+
+var instance32 = new SubType3('pig', 28);
+console.log(instance32.colors); // ["red", "green"]
+instance32.sayName(); // 'pig'
+instance32.sayAge(); // 28
+```
+
+可以使用 `instanceof()`和 `isPrototypeOf()`

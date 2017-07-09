@@ -236,3 +236,134 @@ console.log(person61.friends); // ['may', 'emma', 'van']
 console.log(person62.friends);  // ['may', 'emma']
 person61.sayName(); //lily
 person62.sayName(); //lucy
+
+if(typeof this.sayName != 'function') {
+    Person.prototype.sayName = function () {
+        console.log(this.name);
+    }
+}
+
+function Person7(name, age, job) {
+    var o = new Object();
+    o.name = name;
+    o.age = age;
+    o.job = job;
+    o.sayName = function () {
+        console.log(this.name);
+    }
+
+    return o;
+}
+
+var friend = new Person7('may', 18, 'work');
+friend.sayName()
+
+function Person8(name, age, job) {
+    var o = new Object();
+    o.sayName = function () {
+        console.log(name);
+    }
+    return o;
+}
+
+var friend8 = Person8('may8', 18, 'work');
+friend8.sayName();
+
+
+function SuperType() {
+    this.property = true;
+}
+
+SuperType.prototype.getSuperValue = function () {
+    return this.property;
+}
+
+function LongType() {
+    this.longProperty = false;
+}
+
+LongType.prototype = new SuperType();
+
+LongType.prototype.getLongValue = function () {
+    return this.longProperty
+};
+
+var instance = new LongType();
+
+console.log(instance.getSuperValue());
+
+console.log(instance instanceof Object);
+console.log(instance instanceof SuperType);
+console.log(instance instanceof LongType);
+
+console.log(Object.prototype.isPrototypeOf(instance));
+console.log(SuperType.prototype.isPrototypeOf(instance));
+console.log(LongType.prototype.isPrototypeOf(instance));
+
+
+function Color() {
+    this.colors = ['red', 'green'];
+}
+
+function Other() {
+}
+
+
+Other.prototype = new Color();
+
+var instance1 = new Other();
+instance1.colors.push('pink');
+console.log(instance1.colors); // ["red", "green", "pink"]
+
+var instance2 = new Other();
+
+console.log(instance2.colors,22); //["red", "green", "pink"]
+
+
+function SuperType2() {
+    this.colors = ['red', 'green']
+}
+
+function SubType2() {
+    SuperType2.call(this);
+}
+
+var instances21 = new SubType2();
+instances21.colors.push('pink')
+console.log(instances21.colors);
+
+var instances22 = new SubType2();
+console.log(instances22.colors);
+
+
+function SuperType3(name) {
+    this.name = name;
+    this.colors = ['red','green']
+}
+
+SuperType3.prototype.sayName = function () {
+    console.log(this.name);
+}
+
+function SubType3(name, age) {
+    SuperType3.call(this, name);
+    this.age = age;
+}
+
+SubType3.prototype = new SuperType3()
+SubType3.prototype.constructor = SubType3;
+SubType3.prototype.sayAge = function () {
+    console.log(this.age);
+}
+var instance31 = new SubType3('MAY', 18);
+instance31.colors.push('pink');
+console.log(instance31.colors);
+instance31.sayName();
+instance31.sayAge();
+
+
+var instance32 = new SubType3('pig', 28);
+console.log(instance32.colors);
+instance32.sayName();
+instance32.sayAge();
+
