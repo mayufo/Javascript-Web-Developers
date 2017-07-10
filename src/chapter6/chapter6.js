@@ -57,7 +57,7 @@ Object.defineProperties(book1, {
 
 var descriptor = Object.getOwnPropertyDescriptor(book1, '_year');
 
-console.log(descriptor.value);
+console.log(descriptor.value,111);
 console.log(descriptor.configurable);
 
 
@@ -367,3 +367,79 @@ console.log(instance32.colors);
 instance32.sayName();
 instance32.sayAge();
 
+function object(o) {
+    function F() {}
+    F.prototype = o;
+    return new F();
+}
+
+var person = {
+    name: 'may',
+    friends: ['pig', 'wuqian', 'shujun']
+};
+
+var anotherPerson = object(person);
+anotherPerson.name = 'may';
+anotherPerson.friends.push('renqian');
+var yetAnotherPerson = object(person);
+yetAnotherPerson.name = 'may';
+yetAnotherPerson.friends.push('chenfang');
+
+console.log(person.friends);
+
+var person5 = {
+    name: 'may',
+    friends: ['pig', 'wuqian', 'shujun']
+};
+
+var anotherPerson = Object.create(person5, {
+    name: {
+        value: 'Greg'
+    }
+});
+
+console.log(anotherPerson.name);
+
+function createAnother(original) {
+    var clone = object(original);
+    clone.sayHi = function () {
+        console.log('hi');
+    };
+    return clone;
+}
+
+var person6 = {
+    name: 'may',
+    friends: ['pig', 'wuqian', 'shujun']
+};
+
+var anotherPerson6 = createAnother(person6);
+anotherPerson6.sayHi();
+
+function inheritPrototype(subType, superType) {
+    var prototype = object(subType, superType);
+    prototype.constructor = subType;
+    subType.prototype = prototype;
+}
+
+
+function SuperType7(name){
+    this.name = name;
+    this.colors = ["red", "blue", "green"];
+}
+SuperType7.prototype.sayName = function(){
+    console.log(this.name);
+};
+function SubType7(name, age){
+    SuperType7.call(this, name);
+    this.age = age;
+}
+inheritPrototype(SubType7, SuperType7);
+SubType7.prototype.sayAge = function(){
+    console.log(this.age);
+};
+
+var ins = new SubType7('may', 18);
+
+ins.sayAge()
+console.log(ins.colors);

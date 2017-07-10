@@ -13,7 +13,7 @@
 - 数据属性
 
 **Configurable** 表示能否通过delete删除属性从而重新定义属性，能否修改属性的特性，能否把属性修改为访问器属性，默认true
-**Enumerable** 能否通过 for-in循环返回属性，默认true
+**Enumerable** 能否通过 `for-in`循环返回属性，默认true
 **Writable** 能否修改属性的值，默认true
 **Value** 这个属性的数据值
 
@@ -98,10 +98,10 @@ Object.defineProperties(book1, {
     }
 })
 
-var descriptor = Object.getOwnPropertyDescriptor(book1, '_year');
+var descriptor = Object.getOwnPropertyDescriptor(book1, '_year'); 
 
-console.log(descriptor.value);
-console.log(descriptor.configurable);
+console.log(descriptor.value);// 2004
+console.log(descriptor.configurable); // false
 
 ```
 
@@ -443,7 +443,7 @@ if(typeof this.sayName != 'function') {
 
 ### 寄生构造函数模式
 
-创建一个新对象，并以响应的属性和方法初始化对象，再返回对象
+创建一个新对象，并以相应的属性和方法初始化对象，再返回对象
 ```js
 function Person7(name, age, job) {
     var o = new Object();
@@ -463,7 +463,7 @@ friend.sayName()
 
 在特殊情况下使用，比如想创建有额外方法的特殊数组
 
-返回的对象与构造函数或与后遭函数的原型属性没有关系，构造函数返回的对象与构造函数外部创建的对象没有什么不同
+返回的对象与构造函数或与构造函数的原型属性没有关系，构造函数返回的对象与构造函数外部创建的对象没有什么不同
 不能依赖 `instanceof`操作符来确定对象类型 （不推荐使用）
 
 ### 稳妥构造函数模式
@@ -698,3 +698,151 @@ instance32.sayAge(); // 28
 ```
 
 可以使用 `instanceof()`和 `isPrototypeOf()`
+
+### 原型式继承
+
+借助原型可以基于已有的对象创建新对象
+
+```js
+function object(o) {
+    function F() {}
+    F.prototype = o;
+    return new F();
+}
+```
+
+先创建一个临时构造函数，然后将传入的对象作为这个构造函数的原型，最后返回这个临时类型的实例
+
+```js
+var person = {
+    name: 'may',
+    friends: ['pig', 'wuqian', 'shujun']
+};
+
+var anotherPerson = object(person);
+anotherPerson.name = 'may';
+anotherPerson.friends.push('renqian');
+var yetAnotherPerson = object(person);
+yetAnotherPerson.name = 'may';
+yetAnotherPerson.friends.push('chenfang');
+
+console.log(person.friends); // ['pig', 'wuqian', 'shujun', 'renqian', 'chenfang']
+```
+
+ECMAScript5 新增 `Object.create()`规范了原型式继承，接收两个参数，一个是作为新对象原型的对象和新对象定义额外属性的对象
+
+```js
+var person = {
+    name: 'may',
+    friends: ['pig', 'wuqian', 'shujun']
+};
+
+var anotherPerson = Object.create(person);
+anotherPerson.name = 'may';
+anotherPerson.friends.push('renqian');
+var yetAnotherPerson = Object.create(person);
+yetAnotherPerson.name = 'may';
+yetAnotherPerson.friends.push('chenfang');
+
+console.log(person.friends); // ['pig', 'wuqian', 'shujun', 'renqian', 'chenfang']
+```
+
+第二个参数和 `object.defineProperties()`方法的参数相同，会覆盖原型对象上同名属性
+
+```js
+var anotherPerson = Object.create(person5, {
+    name: {
+        value: 'Greg'
+    }
+});
+
+console.log(anotherPerson.name); // 'greg'
+```
+
+### 寄生式继承
+
+创建一个仅用于封装继承过程的函数
+
+```js
+function createAnother(original) {
+    var clone = object(original);
+    clone.sayHi = function () {
+        console.log('hi');
+    };
+    return clone;
+}
+
+var person6 = {
+    name: 'may',
+    friends: ['pig', 'wuqian', 'shujun']
+};
+
+var anotherPerson6 = createAnother(person6);
+anotherPerson6.sayHi();  // 'hi'
+```
+
+基于 `person6`返回一个新对象 `anotherPerson`,新对象不仅有 `person6`的属性和方法，还有自己的 `sayHi()`方法
+
+寄生式继承为对象添加函数，会由于做不到函数复用而降低效率
+
+
+### 寄生组合是继承 (推荐)
+
+组合继承会调用两次超类型结构函数
+
+```js
+function SuperType(name){
+    this.name = name;
+    this.colors = ["red", "blue", "green"];
+}
+SuperType.prototype.sayName = function(){
+    console.log(this.name);
+};
+function SubType(name, age){
+    SuperType.call(this, name); //第二次调用 SuperType()
+    this.age = age;
+}
+SubType.prototype = new SuperType(); //第一次调用 SuperType()
+SubType.prototype.constructor = SubType;
+SubType.prototype.sayAge = function(){
+    console.log(this.age);
+};
+```
+
+第二次调用就屏蔽了原型中的同名属性
+寄生组合的思想是不必为制定子类型而调用超类型的构造函数，我们需要的是超类的一个副本而已
+
+使用寄生式继承来继承超类的原型，然后将结构制定个子类的原型
+
+```js
+function inheritPrototype(subType, superType) {
+    var prototype = object(subType, superType);  // 创建对象
+    prototype.constructor = subType; // 增强对象
+    subType.prototype = prototype; // 制定对象
+}
+```
+
+```js
+function SuperType7(name){
+    this.name = name;
+    this.colors = ["red", "blue", "green"];
+}
+SuperType7.prototype.sayName = function(){
+    console.log(this.name);
+};
+function SubType7(name, age){
+    SuperType7.call(this, name);
+    this.age = age;
+}
+inheritPrototype(SubType7, SuperType7);
+SubType7.prototype.sayAge = function(){
+    console.log(this.age);
+};
+
+var ins = new SubType7('may', 18);
+
+ins.sayAge()  // 18
+console.log(ins.colors); // ["red", "blue", "green"]
+```
+
+

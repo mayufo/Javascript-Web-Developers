@@ -1,7 +1,7 @@
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var OpenBrowserPlugin = require('open-browser-webpack-plugin');
 var path = require('path');
-var chapter = 6; // please select you want show chapter, you can select 3、4
+var chapter = 7; // please select you want show chapter, you can select 3、4
 
 module.exports = {
     entry: './src/chapter'+ chapter +'/chapter' + chapter,
