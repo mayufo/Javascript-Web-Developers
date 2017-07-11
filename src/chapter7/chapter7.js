@@ -74,3 +74,35 @@ function assignHandler() {
         console.log(element.id);
     }
 }
+
+function outputNumbers(count) {
+    for (var i = 0; i < count; i++) {
+        console.log(i)
+    }
+    var i;
+    console.log(i, 44);
+}
+outputNumbers(5);
+
+
+
+function outputNumbers2(count) {
+    (function () {
+        for (var i = 0; i < count; i++) {
+            console.log(i)
+        }
+    })();
+    // console.log(i, 44); // 报错
+}
+outputNumbers2(5);
+
+function MyObject() {
+    var privateVariable = 10;
+    function privateFunction () {
+        return false;
+    }
+    this.publicMethod = function () {
+        privateVariable++;
+        return privateFunction();
+    }
+}

@@ -184,4 +184,69 @@ function assignHandler() {
 
 以上代码创建了一个 `element`的闭包，闭包有创建了循环引用，只要匿名存在，引用至少1，内存无法回收
 
+## 模仿块级作用域
+
+js没有会计作用域的概念，在块语句中定义的变量，实际也包含函数中
+
+```js
+function outputNumbers(count) {
+    for (var i = 0; i < count; i++) {
+        console.log(i); // 分别输出1 2 3 4 5 
+    }
+    console.log(i, 44); // 5
+}
+outputNumbers(5);
+```
+
+即使重新声明变量，也不会改变它的值
+
+匿名函数可以用会计作用域来避免
+
+```js
+(function() {
+    // 这里是块级作用域
+})
+```
+
+```js
+function outputNumbers2(count) {
+    (function () {
+        for (var i = 0; i < count; i++) {
+            console.log(i)
+        }
+    })();
+    console.log(i, 44); // 报错
+}
+outputNumbers2(5);
+```
+
+可以使用自己的变量，又不必担心搞乱全局作用域
+
+
+## 私有变量
+
+js没有私有成员的概念，但是任何函数中定义的变量都可以认为是私有变量，包括参数、局部变量和函数内部定义的其他函数
+
+有权访问私有变量和私有函数的公有方法成为`特权方法`
+
+```js
+function MyObject() {
+    // 私有变量和私有函数
+    var privateVariable = 10;
+    function privateFunction () {
+        return false;
+    }
+    // 特权方法
+    this.publicMethod = function () {
+        privateVariable++;
+        return privateFunction();
+    }
+}
+```
+
+利用私有和特权成员可以隐藏那些不应该直接修改的数据
+
+使用构造函数来达到目的会针对每个实例都创建同样一组方法，可以考虑静态私有变量来实现特权方法
+
+### 静态私有变量
 
