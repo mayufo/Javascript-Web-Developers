@@ -250,3 +250,150 @@ function MyObject() {
 
 ### 静态私有变量
 
+在私有作用域中,封装了一个构造函数及相应的方法
+
+```js
+(function () {
+    // 私有变量和私有函数
+    var privateVariable = 10;
+    function privateFunction() {
+        return false
+    }
+    // 构造函数
+    MyObject = function () {
+
+    };
+    // 公有/特权方法
+    MyObject.prototype.publicMethod = function () {
+        privateVariable++;
+        return privateFunction();
+    }
+})()
+```
+
+公有方法在原型上定义，构造函数是一个全局变量，能在私有作用域之外被访问
+私有变量和函数是由实例共享，都使用一个函数
+
+```js
+(function () {
+    var name = '';
+
+    Person = function (value) {
+        name = value;
+    }
+
+    Person.prototype.getName = function () {
+        return name;
+    }
+
+    Person.prototype.setName = function (value) {
+        name = value;
+    }
+})()
+
+var person1 = new Person('may');
+console.log(person1.getName()); // may
+person1.setName('liu'); 
+console.log(person1.getName()); // liu
+```
+
+`name`变成静态的，由所有实例共享的属性
+
+增进代码的复用，但是每个实例都没有私有变量
+
+### 模块模式
+
+为单利创建私有变量和特权方法
+`单例`就是只有一个实例对象
+
+```js
+
+var singleton = {
+    name: value,
+    method: function () {
+        // 方法代码
+    }
+}
+```
+
+模块模式通过单例添加私有变量和特权方法
+
+```js
+var sigleton = function () {
+    // 私有变量和方法
+    var privateVariable = 10;
+    
+    function privateFunction() {
+        return false
+    }
+    // 特权 公有方法和属性
+    return {
+        publicProperty: true,
+        publicMethod: function () {
+            privateVariable++;
+            return privateFunction();
+        }
+    }
+}
+```
+
+因为通过字面量来表示它，单例通常都是作为全局对象存在，不会将它传给函数，没有必要使用 `instanceof`来检查其对象类型
+
+### 增加的模块模型
+
+```js
+var singleton = function () {
+    // 私有变量和私有函数
+    var privateVariable = 10;
+    
+    function privateFunction() {
+      return false;
+    }
+    // 创建对象
+    var object = new CustomType();
+    
+    // 添加特权/私有属性和方法
+    object.publicProperty = true;
+    object.publicMethod = function() {
+      privateVariable++;
+      return privateFunction();
+    };
+    
+    return object;
+}
+```
+
+
+```js
+var application = function () {
+    // 私有变量和函数
+    var components = new Array();
+    // 初始化
+    components.push(new BaseComponent());
+    // 创建局部副本
+    var app = new BaseComponent();
+    
+    // 公共接口
+    app.getComponentCount = function () {
+        return components.length;
+    }
+    
+    app.registerComponent = function (component) {
+        if(typeof component == 'object'){
+            components.push(component);
+        }
+    }
+    // 返回副本
+    return app;
+}
+```
+
+结果仍然是将它赋值给全局变量 `application`
+
+## 小结
+
+- 当在函数内部定义了其他函数的时候，就创建了闭包，闭包有权访问函数内部所有变量
+    - 闭包的作用域包含着它自己的作用域，包含函数的作用域和全局作用域
+    - 通常函数作用域及所有变量执行结束后销毁
+    - 当函数返回一个闭包，函数作用域将会一直再内存中保存到闭包不存在为止
+   
