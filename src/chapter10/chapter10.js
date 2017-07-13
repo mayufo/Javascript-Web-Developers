@@ -42,3 +42,44 @@ console.log(myImage);
 console.log(document.implementation.hasFeature('XML', '1.0'));
 
 document.write("<div>" + 111 + "<\/div>");
+
+console.log(ul.tagName);
+console.log(ul.nodeName);
+
+var div = document.getElementById('myDiv');
+console.log(div.id);
+console.log(div.title);
+console.log(div.lang);
+console.log(div.dir);
+
+
+console.log(div.getAttribute('id'));
+console.log(div.getAttribute('class'));
+console.log(div.getAttribute('title'));
+console.log(div.getAttribute('lang'));
+console.log(div.getAttribute('dir'));
+// div['data-may'] = true;
+console.log(div.getAttribute('data-may'));
+
+console.log(div['data-may']);
+
+div.mycolor = 'red';
+console.log(div.getAttribute('mycolor'));
+
+function outputAttributes(element) {
+    var paris = new Array(),
+        attrName,
+        attrValue,
+        i,
+        len;
+    for(var i = 0, len = element.attributes.length; i < len; i++) {
+        attrName = element.attributes[i].nodeName;
+        attrValue = element.attributes[i].nodeValue;
+        if (element.attributes[i].specified) {
+            paris.push(attrName + "=\"" + attrValue + "\"");
+        }
+    }
+    return paris.join(' ');
+}
+
+console.log(outputAttributes(div)); //id="myDiv" class="bd" title="Body text" lang="en" dir="ltr" data-may="true"

@@ -240,3 +240,133 @@ document.write("<div>" + 111 + "<\/div>");
 为避免问题，可以在闭合标签加转义字符 `\`
 
 方法 `open()`和 `close()`分别用于打开和关闭网页的输出
+
+###  Element类型
+
+`nodeType`: 1
+`nodeName` 元素的标签名
+`nodeValue` null
+`parentNode` 可能是Document 或 Element
+ 其他节点可能是 Element、Text、Comment等等
+ 
+ `nodeName`和 `tagName`返回元素的标签名
+```js
+console.log(ul.tagName);   // UL
+console.log(ul.nodeName); //UL
+```
+
+输出都都是大写，比较的时候
+```js
+if(element.tagName.toLowerCase() == 'div') {
+    console.log(true);
+}
+```
+
+- HTML元素
+
+HTML都由`HTMLElement`类型表示，不是直接通过这个类型,而是具体的子类型表示
+
+`id` 文档中唯一标识符
+`title` 一般通过工具条小时出来
+`lang` 元素内容的代码语言
+`dir` 语言方向`ltr` or `rtl`
+`className` 与元素的`class`特性对应
+
+```js
+var div = document.getElementById('myDiv');
+console.log(div.id);
+console.log(div.title);
+console.log(div.lang);
+console.log(div.dir);
+```
+
+- 取得特性
+
+`getAttribute（）` 特性名与实际的特姓名相同，也可以去自定义特性,自定义的最好加前缀`data-`
+
+
+```html
+<div id="myDiv" class="bd" title="Body text" lang="en" dir="ltr" data-may="true"></div>
+
+```
+
+```js
+var div = document.getElementById('myDiv');
+console.log(div.getAttribute('id'));
+console.log(div.getAttribute('class'));
+console.log(div.getAttribute('title'));
+console.log(div.getAttribute('lang'));
+console.log(div.getAttribute('dir'));
+console.log(div.getAttribute('data-may')); //true
+```
+
+也可以通过`DOM`元素本身来访问`div.id`、`div.title`但是自定义的特性访问`div['data-may'']`只会是 `undefined`，自定义的特性也不会改变元素的属性
+
+`getAttribute()`返回值并不相同第一类是`style`，返回一个对象第二类是`事件处理程序`类似`onclick`属性，返回一个函数
+
+- 设置特性
+`setAttribute()` 接受两个参数，要设置的特性名和值
+```js
+div.setAttribute('id', 'someOtherId')
+```
+
+通过这个方法设置的特性名统一都会转为小写形式
+
+自定义的属性不会改变元素的特性
+```js
+div.mycolor = 'red';
+console.log(div.getAttribute('mycolor')); //null
+```
+
+推荐使用属性来设置特性
+
+`removeAttribute()`彻底删除元素的特性
+
+```js
+div.removeAttribute('class');
+```
+
+- attributes属性
+
+`attributes`唯一一个DOM节点类型，包含 `NameNodeMap`与 `NodeList`类似，元素的每个特性都有 `Attr`节点表示，每个节点都保存在 `NamedNodeMap`对象中
+
+`getNamedItem(name)` 返回`nodeName`属性的name节点
+`removeNamedItem(name)` 移除列表 `nodeName`属性为 name的节点,返回被删除的特性
+`setNamedItem(node)` 向列表中添加节点，以节点的`nodeName`属性为索引
+`item(pos)`数字pos位置处的节点
+
+```js
+var id = element.attributes.getNamedItem('id').nodeValue;
+var id = element.attributes['id'].nodeValue;
+```
+删除一个特性
+```js
+var oldAttr = element.attributes.removeNamedItem('id');
+```
+添加一个特性
+```js
+element.attributes.setNamedItem(newAttr);
+```
+
+`attribute`的方法不够方便，如果对于遍历元素的特性，可以用该属性
+
+```js
+function outputAttributes(element) {
+    var paris = new Array(),
+        attrName,
+        attrValue,
+        i,
+        len;
+    for(var i = 0, len = element.attributes.length; i < len; i++) {
+        attrName = element.attributes[i].nodeName;
+        attrValue = element.attributes[i].nodeValue;
+        //IE7早版本存在特性节点有个 `specified`的属性，这个属性为true,以为指定相应的特性
+        if (element.attributes[i].specified) { 
+            paris.push(attrName + "=\"" + attrValue + "\"");
+        }
+    }
+    return paris.join(' ');
+}
+
+console.log(outputAttributes(div)); //id="myDiv" class="bd" title="Body text" lang="en" dir="ltr" data-may="true"
+```
