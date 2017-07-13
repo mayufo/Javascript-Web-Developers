@@ -422,3 +422,135 @@ location.reload(true); // 重新加载（服务器加载）
 ```
 
 ## navigator对象
+
+![](images/jingtong_13.png)
+![](images/jingtong_14.png)
+
+### 检测插件
+
+检测是否安装了特定的插件
+
+`name` 插件的名字
+`description` 插件的描述
+`filenme` 插件的文件名
+`length` 插件所处理的MINE数量
+
+```js
+function hasPlugin(name) {
+    name = name.toLowerCase();
+    for(var i = 0; i < navigator.plugins[i].length; i++) {
+        if(navigator.plugins[i].name.toLowerCase().indexOf(name) > -1) {
+            return true
+        }
+    }
+    return false;
+}
+
+console.log(hasPlugin('Flash')); //true
+
+console.log(hasPlugin('QuickTime')); // false
+```
+
+每个插件本身也是一个MimeType对象数组，可以通过括号语法访问，四个属性
+- MIME类型描述
+- 回指插件对象 `enabledPlugin`
+- 表示与MIME类型对应的文件拓展名的字符串
+- 表示MIME字符串的type
+
+如果想在IE中检验，使用专门的`ActiveXObject`类型，可以使用`COM`对象来检验
+
+```js
+function hasIEPlugin(name) {
+    try {
+        new ActiveXObject(name);
+        return true
+    } catch (ex) {
+        return false
+    }
+}
+
+console.log(hasIEPlugin('ShockwaveFlash.ShockwaveFlash'));
+console.log(hasIEPlugin('QuickTime.QuickTime'));
+```
+
+如果是未知的`COM`对象，会导致抛出错误
+
+最好的做法是针对每个插件分别检验
+
+```js
+function hasFlash() {
+    var result = hasPlugin('Flash');
+    if(!result) {
+        result = hasIEPlugin('ShockwaveFlash.ShockwaveFlash')
+    }
+    return result;
+}
+
+function hasQucikTime() {
+    var result = hasPlugin('QuickTime');
+    if(!result) {
+        result = hasIEPlugin('ShockwaveFlash.ShockwaveFlash')
+    }
+    return result;
+}
+
+console.log(hasFlash()); // true
+
+console.log(hasQucikTime());  // false
+```
+
+`plugins`合集还有个`refresh()`的方法，用于刷新所装插件，接收一个参数，`true`重新加载插件的所有页面
+
+### 注册处理程序
+
+`registerContentHandler()`RSS阅读器，接收三个参数：要处理的MIME类型，可以处理的MIME类型的页面URL、应用程序的名字
+
+```js
+navigator.registerContentHandler('application/rss+xml', 'http://www.baidu.com?feed=%s', 'some reader');
+```
+
+第二个参数`%s`表示RSS源URL，由浏览器自动插入
+
+`registerProtocolHandler()`电子邮件客户端，接收三个参数，要处理的协议，处理改协议页面的URL、应用程序的名字
+
+```js
+navigator.registerProtocolHandler('mailto', 'http://www.baidu.com?cmd=%s', 'some Mail Client');
+```
+第二个参数`%s`表示原始请求
+
+## screen 对象
+
+包括浏览器外部的显示器信息
+
+![](images/jingtong_15.png)
+
+![](images/jingtong_16.png)
+
+```js
+window.resizeTo(screen.availWidth, screen.availHeight); // 调节窗口到浏览器大小，有的浏览器会禁用调节大小
+```
+## history对象
+
+`history`对象保存着用户上网的历史记录，从窗口被打开开始
+
+使用`go()`方法可以在用户的历史记录上任意跳转
+
+```js
+history.go(-1); // 前进
+history.go(1); // 后退
+```
+
+也可以给go()方法传递字符串参数
+
+```js
+history.go('www.baidu.com'); //跳转到baidu页面
+```
+
+也可以使用`back()`和`forward()`来代替`go()`
+
+```js
+history.back(); // 后退一页
+history.forward(); // 前进一页
+```
+
+`history`还有`length`属性,保持历史记录的数量

@@ -98,6 +98,59 @@
 // console.log(args['q'],22);
 // console.log(args['num']);
 
-location.replace('http://www.baidu.com/')
+// location.replace('http://www.baidu.com/');
+
+console.log(navigator.appCodeName);
+console.log(navigator);
+
+function hasPlugin(name) {
+    name = name.toLowerCase();
+    for(var i = 0; i < navigator.plugins[i].length; i++) {
+        if(navigator.plugins[i].name.toLowerCase().indexOf(name) > -1) {
+            return true
+        }
+    }
+    return false;
+}
+
+console.log(hasPlugin('Flash')); //true
+
+console.log(hasPlugin('QuickTime')); // false
 
 
+function hasIEPlugin(name) {
+    try {
+        new ActiveXObject(name);
+        return true
+    } catch (ex) {
+        return false
+    }
+}
+
+console.log(hasIEPlugin('ShockwaveFlash.ShockwaveFlash'));
+console.log(hasIEPlugin('QuickTime.QuickTime'));
+
+
+function hasFlash() {
+    var result = hasPlugin('Flash');
+    if(!result) {
+        result = hasIEPlugin('ShockwaveFlash.ShockwaveFlash')
+    }
+    return result;
+}
+
+function hasQucikTime() {
+    var result = hasPlugin('QuickTime');
+    if(!result) {
+        result = hasIEPlugin('ShockwaveFlash.ShockwaveFlash')
+    }
+    return result;
+}
+
+console.log(hasFlash()); // true
+
+console.log(hasQucikTime());  // false
+
+console.log(screen.availWidth, screen.availHeight);
+
+console.log(history);
