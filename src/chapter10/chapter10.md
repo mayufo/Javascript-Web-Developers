@@ -370,3 +370,391 @@ function outputAttributes(element) {
 
 console.log(outputAttributes(div)); //id="myDiv" class="bd" title="Body text" lang="en" dir="ltr" data-may="true"
 ```
+
+- 创建元素
+在创建的同事，也设置了 `ownerDocument`(根元素)，要把新元素添加到文档树中，浏览器才能呈现出来
+```js
+var div = document.createElement('div');
+```
+另一种创建,不推荐使用，只在更早期版本IE7的版本中使用
+
+```js
+var div = document.createElement('<div id=\'myNewDiv\' cladd=\'box\'> ')
+```
+
+- 元素的子节点
+
+如果想通过 `childNode`遍历子节点，可以判断下 `nodeType`再执行某些操作
+
+```html
+<ul>
+    <li>1</li>
+    <li>2</li>
+    <li>3
+        <ul>
+            <li>4</li>
+            <li>5</li>
+
+        </ul>
+    </li>
+</ul>
+```
+
+```js
+var ul = document.getElementsByTagName('ul')[0];
+
+console.log(getChildNode(ul)); // 3
+function getChildNode(element) {
+    var node = 0;
+    for(var i = 0, len = element.childNodes.length; i < len; i++) {
+        console.log(element.childNodes[i]);
+        if(element.childNodes[i].nodeType == 1) {
+            node++;
+        }
+    }
+
+    return node;
+}
+```
+
+如果想去的某些特定的标签，可以用`getElementsByTagName()`
+
+### Text 类型
+
+`nodeType` 3
+`nodeName` '#text'
+`nodeValue` 节点的文本
+`parentNode` 一个Element
+没有子节点
+可以通过`nodeValue`属性或`data`属性访问`Text`节点的文本
+`appendData(text)` 将text添加到尾部
+`deleteData(offset, count)`从offset指定位置开始删除count个字符
+`insertData(offset, text)`在offset位置插入text
+`replaceData(offset, count, text)` 从text替换offset位置到offset+count为止的文本
+
+文本节点还有一个`length`属性
+
+- 创建文本节点
+
+在创建新文本节点的同事，会为其设置 `ownerDocument`属性，除非把新节点添加到文档树中，否则不会再浏览器显示
+```js
+var textNode = document.createTextNode('<strong>Hello</strong>world');
+```
+
+```js
+var element = document.createElement('div');
+element.className = 'message';
+
+var textNode = document.createTextNode('hello world');
+element.appendChild(textNode);
+
+document.body.appendChild(element);
+```
+
+如果是多个文本节点，就会连起来显示，中间不会有空格
+
+- 规范化节点
+
+可以用`normalize`来规范文本节点在插入的时候，浏览器会认为增加了childNode的个数，用了此方法规范后变为1
+
+```js
+
+var element = document.createElement('div');
+element.className = 'message';
+var textNode = document.createTextNode('Hello world');
+element.appendChild(textNode);
+
+var anotherTextNode = document.createTextNode('Yippee');
+element.appendChild(anotherTextNode);
+
+document.body.appendChild(element);
+
+console.log(element.childNodes.length);  // 2
+
+element.normalize();
+
+console.log(element.childNodes.length); // 1
+```
+
+- 分割文本节点
+
+`splitText()`讲一个文本节点分成两个文本节点，按照位置分割
+
+```html
+<div>hello world!</div>
+```
+```js
+
+var newValue = element.firstChild.splitText(5);
+console.log(element.firstChild.nodeValue); // 'Hello'
+console.log(newValue.nodeValue); // ' world'
+console.log(element.childNodes.length); //2
+```
+
+### Comment类型
+
+`nodeType` 8
+`nodeName` #comment
+`nodeValue` 注释内容
+`parentNode` `document`或`element`
+没有子节点
+与Text类型类似，可以`splitText`分割，也可以通过`nodeValue`或`data`来得到注释内容
+
+`document.createComment()`可以创建注释节点
+
+```js
+var comment = document.createComment('a comment');
+```
+
+注释节点标签前面为`!`的元素,可以使用`getElementsByTagNames()`取得注释节点
+
+### CDATASection类型
+
+与Comment类似
+
+`nodeType` 4
+`nodeName` #cdata-section
+`nodeValue` CDATA区域的内容
+`parentNode` `document`或`element`
+不支持子节点
+
+```html
+<div id="myDiv"><![CDATA[This is some content.]]></div>
+```
+
+`document.createCDataSection()`来创建`CDATA`区域
+
+### DocumentType 类型
+`nodeType` 10
+`nodeName` doctype的名称
+`nodeValue` null
+`parentNode` `document`
+不支持子节点
+
+`DocumentType`不能动态创建，只能通过解析文档代码来创建，保存在`document.doctype`中，有三个属性
+`name` 文档类型名称
+`entities` 文档类型描述的实体`NameNodeMap`对象，通常都是空列表
+`notations` 文档类型描述的符号的`NameNodeMap`对象，通常都是空列表
+
+```js
+console.log(document.doctype.name); //html
+```
+
+### DocumentFragment 类型
+`nodeType` 11
+`nodeName` #document-fragment
+`nodeValue` null
+`parentNode` null
+子节点可以是Element 等等
+可以作为一个仓库使用，里面保存将来会添加到文档中的节点。创建文档片段可以使用 `document.crateDocumentFragment()`
+
+```js
+var fragment = document.createDocumentFragment();
+```
+如果我们有个`ul`想添加多个列表项，逐个添加会导致浏览器反复渲染，可以使用文档片段来创建类标签，然后再一次性添加到文档中
+
+```html
+<ul id="myList"></ul>
+```
+
+```js
+var fragment = document.createDocumentFragment();
+var ul = document.getElementById('myList');
+var li = null;
+for (var i = 0; i < 3; i++) {
+    li = document.createElement('li');
+    li.appendChild(document.createTextNode('Item' + (i+1)));
+    fragment.appendChild(li);
+}
+
+ul.appendChild(fragment); // 文档片段的所有子节点都被删除并转移到ul中
+```
+
+### Attr类型
+
+`nodeType` 2
+`nodeName` 特性名称
+`nodeValue` 特性的值
+`parentNode` null
+HTML中没有子节点
+XML中子节点可以是Text或EntitiyReference
+
+三个属性
+
+`name` 特性名称
+`value` 特性的值
+`specified` 布尔值，区别特性是在代码中制定的还是默认的
+
+```js
+var attr = document.createAttribute("align");
+attr.value = "left";
+element.setAttributeNode(attr);
+console.log(element.attributes["align"].value); //"left"
+console.log(element.getAttributeNode("align").value); //"left"
+console.log(element.getAttribute("align")); //"left"
+```
+
+`setAttributeNode()`新创建的特性必须添加到元素中，用该方法
+
+`atributes`和`getAttributeNode`返回队形特性的`Attr`节点，`getAttribute`返回特性的值
+
+## DOM操作技术
+
+### 动态脚本
+
+插入外部元素和直接插入js代码
+
+```html
+<sript type="text/javascript" src="may.js"></sript>
+```
+
+创建这个DOM代码 
+
+```js
+var script = document.createElement('script');
+script.type = 'text/javascript';
+script.src = 'may.js';
+document.body.appendChild(script);
+
+// 也可以封装
+
+function loadScript(url) {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src = url
+  document.body.appendChild(script);
+
+}
+```
+
+另一种内嵌
+
+```html
+<script>
+     function sayHi() {
+         console.log('hi')
+     }
+</script>
+```
+创建这个DOM代码
+
+```js
+var script = document.createElement('script');
+script.type = 'text/javascript';
+script.appendChild(document.createTextNode("function sayhi() { console.log('hi')}"));  // 在IE中不能返回子节点可以用script.text = "function sayHi() { console.log('hi')}"
+document.body.appendChild(script);
+// 封装
+function loadScriptString(code){
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    try {
+        script.appendChild(document.createTextNode(code));
+    } catch (ex){
+        script.text = code;
+    }
+    document.body.appendChild(script);
+}
+
+loadScriptString("function sayHi(){alert('hi');}");
+```
+
+### 动态样式
+
+```html
+<link rel="stylesheet" type="text/css" href="style.css">
+```
+创建这个DOM代码 
+
+```js
+function loadStyles(url){
+    var link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.type = "text/css";
+    link.href = url;
+    var head = document.getElementsByTagName("head")[0];
+    head.appendChild(link);
+}
+
+loadStyles("styles.css");
+```
+
+另一种嵌入css
+
+```html
+<style type="text/css">
+body {
+    background-color: red;
+}
+</style>
+```
+
+用DOM表示代码
+
+```js
+function loadStyleString(css){
+    var style = document.createElement("style");
+    style.type = "text/css";
+    try{
+        style.appendChild(document.createTextNode(css));  // 原因同上script
+    } catch (ex){
+        style.styleSheet.cssText = css;
+    }
+    var head = document.getElementsByTagName("head")[0];
+    head.appendChild(style);
+}
+
+loadStyleString("body{background-color:red}");
+```
+
+`style.cssText`在重用style元素并在此设置属性，可能导致浏览器崩溃
+
+### 操作表格
+
+
+使用DOM创建HTML表格
+
+![](images/jingtong_18.png)
+
+`<tr>`元素添加属性和方法
+![](images/jingtong_19.png)
+
+```html
+<table border="1" width="100%">
+    <tbody>
+        <tr>
+            <td>Cell 1,1</td>
+            <td>Cell 2,1</td>
+        </tr>
+        <tr>
+            <td>Cell 1,2</td>
+            <td>Cell 2,2</td>
+        </tr>
+    </tbody>
+</table>
+```
+
+```js
+// 创建第一行
+tbody.insertRow(0);
+tbody.rows[0].insertCell(0);
+tbody.rows[0].cells[0].appendChild(document.createTextNode("Cell 1,1"));
+tbody.rows[0].insertCell(1);
+tbody.rows[0].cells[1].appendChild(document.createTextNode("Cell 2,1"));
+
+// 创建第二行
+tbody.insertRow(1);
+tbody.rows[1].insertCell(0);
+tbody.rows[1].cells[0].appendChild(document.createTextNode("Cell 1,2"));
+tbody.rows[1].insertCell(1);
+tbody.rows[1].cells[1].appendChild(document.createTextNode("Cell 2,2"));
+```
+### 使用NodeList
+
+`NodeList`近似 `NamedNodeMap`和`HTMLCollection`
+
+当文档结构发生变化，就会得到更新，所有的NodeList对象都是在访问DOM文档时实时运行的查询
+
+如果想迭代一个NodeList,最好使用`length`属性初始化第二个变量
+
+每访问 `NodeList`对象，都会运行一次查询，最好的办法就是减少DOM操作
+
