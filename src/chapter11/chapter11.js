@@ -36,6 +36,18 @@ console.log(ul.dataset['appid']);
 // var sanitized = window.toStaticHTML(text);
 // console.log(sanitized)
 
-var divDemo = document.getElementById('demoDiv');
+// var divDemo = document.getElementById('demoDiv');
+//
+// document.divDemo[0].scrollIntoView();
 
-document.divDemo[0].scrollIntoView();
+
+console.log(document.documentMode);
+
+console.log(document.documentElement.contains(document.body));
+
+console.log(document.documentElement.compareDocumentPosition(document.body));  // 20
+
+var div = document.getElementById('content');
+
+console.log(div.innerText);
+

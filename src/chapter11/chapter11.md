@@ -266,8 +266,83 @@ document.divDemo[0].scrollIntoView();  // 不支持chrome
 
 ## 专有扩展
 
+### 文档模式
 
 
+IE8中引入了文档模式，页面文档决定可以使用什么功能
+强制浏览器以某种模式渲染页面可以使用`HTTP`头部信息`X-UA-Compatible`或者通过等价`<meta>`标签来设置
 
+```html
+<meta http-equiv="X-UA-COMPATIBLE" content="IE=IEVersion">
+```
 
+`EMULATEIE9`到`EMULATEIE7` 以IEX标准模式渲染页面，否则模式为`IE5`
+9 - 5 强制以IEX标准渲染页面，忽略文档类型声明
 
+`document.documentMode`可以知道页面使用什么文档模式,IE中起作用
+
+### children属性
+
+`children`和`childNodes`没有区别，两个属性值相同
+
+### contains()方法
+
+知道某个节点是不是另一个节点的后代
+
+- contains
+```js
+console.log(document.documentElement.contains(document.body)); // true 包含关系
+```
+
+- compareDocumentPosition
+ `1` 无关
+ `2` 居前 给定的节点在DOM树在参考节点之前
+ `4` 居后 
+ `8` 包含
+ `16`被包含
+```js
+console.log(document.documentElement.compareDocumentPosition(document.body));  // 20 （居后的4 + 被包含的16）
+```
+
+### 插入文本
+
+- innerText 属性可以操作元素中包含的所有文本内容
+
+```html
+<div id="content">
+    <p>this is a</p>
+    <ul>
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+    </ul>
+</div>
+```
+```js
+console.log(div.innerText); // this is a 1 2 3
+```
+也可以设置这个`div`元素的内容
+
+如果赋值中存在（大于小于引号），会进行编码
+
+类似支持这个方法的`textContent`
+
+- outerText 属性
+
+不知替换调用它的元素的子节点，二回替换整个元素
+
+### 滚动
+
+`scrollIntoViewIfNeeded(alignCenter)`当前元素在视口中不可见的情况下，才滚动浏览器串口或者容器元素，最终可见，参数为true,表示尽量将元素显示在窗口中部
+
+`scrollByLines(lineCount)` 将元素的内容滚动指定的行高，`lineCount`可以是正直 也可以是负值
+
+`scrollByPages(pageCount)`将元素的内容滚动指定页面高度，具体高度有元素的高度决定
+
+```js
+document.body.scrollByLines(5); // 将页面主体滚动5行
+
+document.images[0].scrollIntoViewIfNeeded() // 当前元素不可见的时候，进入浏览器的视口
+
+document.body.scrollByPage(-1); //将页面主体往回滚1页
+```
