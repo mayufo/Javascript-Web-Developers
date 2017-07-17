@@ -626,3 +626,134 @@ EventUtil.addHandler(window, 'load', function (event) {
 ### HTML5事件
 
 - contentxmenu事件
+
+点击鼠标右键可以调出上下文菜单
+
+```html
+<div id="myDiv">Right click or Ctrl+click me to get a custom context menu.
+Click anywhere else to get the default context menu.</div>
+<ul id="myMenu" style="position:absolute;visibility:hidden;background-color:
+silver">
+    <li><a href="http://www.nczonline.net">Nicholas  site</a></li> 
+    <li><a href="http://www.wrox.com">Wrox site</a></li>
+    <li><a href="http://www.yahoo.com">Yahoo!</a></li>
+</ul>
+```
+```js
+
+EventUtil.addHandler(window, "load", function(event){
+    var div = document.getElementById("myDiv");
+    EventUtil.addHandler(div, "contextmenu", function(event){
+        event = EventUtil.getEvent(event);
+        EventUtil.preventDefault(event);
+        var menu = document.getElementById("myMenu");
+        menu.style.left = event.clientX + "px";
+        menu.style.top = event.clientY + "px";
+        menu.style.visibility = "visible";
+    });
+    EventUtil.addHandler(document, "click", function(event){ document.getElementById("myMenu").style.visibility = "hidden";
+    });
+});
+```
+
+首先要取消默认行为，保证不显示浏览器默认的上下文，然后根据event对象的clientX和clientY属性的值
+
+— beforeunload事件
+
+发生在window对象上的beforeunload事件，为了让开发人员有可能在页面卸载前阻止这一操作
+
+必须将`event.returnValue`的值设置为要显示给用户的字符串，同时作为函数的值返回
+
+```js
+EventUtil.addHandler(window, 'beforeunload', function (event) {
+    event = EventUtil.getEvent(event);
+    var message = 'miss you if you go';
+    event.returnValue = message;
+    return message;
+})
+```
+
+- DOMContentLoaded事件
+
+形成完整的DOM树之后就触发，不会理会图像、js、css文件或者其他资源是否已经下载完毕
+
+可以更早的交互
+
+```js
+EventUtil.addHandler(document, 'DOMContentLoaded', function(event) {
+  console.log('Content loaded')
+})
+```
+
+事件对象不提供任何额外的信息，target是`document`
+如果不支持这个方法，建议在页面加载期间设置一个时间为0的超时调用
+
+```js
+setTimeout(function () {
+    // 事件处理的函数
+}, 1000)
+```
+
+- readystatechange 事件
+
+提供与文档或者元素的加载状态有关的信息
+
+
+`uninitialized(未初始化)` 对象存在尚未初始化
+`loading(正在加载)` 对象正在加载数据
+`loaded(加载完毕)` 对象加载数据完成
+`interactive(交互)` 可以操作对象，但是没有完全加载
+`complete(完成)` 对象已经加载完毕
+
+不是所有的对象都会经历这几个阶段，以为时间经常少于4次，属性值不连续，不能确保顺序
+
+```js
+EventUtil.addHandler(document, 'readystatechange', function(event) {
+  if(document.readyState == 'interactive') {
+      console.log('Content loaded');
+  }
+})
+```
+
+event对象不提供任何信息，没有目标对象
+
+当外部资源多的时候  交互 < 完成
+当资源较少  完成 < 交互
+有必要同事检测交互和完成阶段
+
+```js
+EventUtil.addHandler(document, 'readystatechange', function(event) {
+  if(document.readyState == 'interactive' || document.readyState == 'complete') {}
+  EventUtil.removeHandle(document, 'readystatechange', arguments.callee); // 移除相应的事件处理程序以免在其他阶段再执行
+  console.log('conetnt loaded');
+})
+```
+
+`script`和`link`也会触发`readystatechange`事件，用来确定js和css是否加载完毕
+等于`loaded`或`complete`都有可能表示资源已经可用
+
+```js
+  EventUtil.addHandler(window, "load", function(){
+        var script = document.createElement("script");
+        EventUtil.addHandler(script, "readystatechange", function(event){ 
+            event = EventUtil.getEvent(event);
+            var target = EventUtil.getTarget(event);
+            if (target.readyState == "loaded" || target.readyState == "complete") { 
+                EventUtil.removeHandler(target, "readystatechange", arguments. callee); 
+                alert("Script Loaded");
+            } 
+        });
+    script.src = "example.js";
+    document.body.appendChild(script);
+});
+```
+
+- pageshow和pagehide事件r
+
+Firefox和Opera 有个特性，往返缓存，可以在用户使用浏览器的后退和前进按钮时加载页面的转换速度
+
+第一个事件是`pageshow`
+
+在重新加载页面中，`pageshow会在load事件触发后触发
+`bfcache`中的页面，pageshow会在页面状态恢复的一瞬间触发
+事件目标是document,但是必须将其时间处理程序添加到window
