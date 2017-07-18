@@ -750,10 +750,358 @@ EventUtil.addHandler(document, 'readystatechange', function(event) {
 
 - pageshow和pagehide事件r
 
-Firefox和Opera 有个特性，往返缓存，可以在用户使用浏览器的后退和前进按钮时加载页面的转换速度
+Firefox和Opera 有个特性，往返缓存，可以在用户使用浏览器的后退和前进按钮时加快页面的转换速度，其实整个页面都保存在内存里
 
-第一个事件是`pageshow`
+1. `pageshow`页面显示时触发，事件目标是`document`,必须将事件处理添加到`window`
 
-在重新加载页面中，`pageshow会在load事件触发后触发
-`bfcache`中的页面，pageshow会在页面状态恢复的一瞬间触发
-事件目标是document,但是必须将其时间处理程序添加到window
+```js
+(function(){
+    var showCount = 0;
+    EventUtil.addHandler(window, "load", function(){
+        alert("Load fired");
+    });
+    EventUtil.addHandler(window, "pageshow", function(){
+        showCount++;
+        alert("Show has been fired " + showCount + " times.");
+    });
+})();
+```
+
+首次加载完成值为0，后退再返回会递增，重新刷新值为0
+
+`pageshow`事件`event`对象还包含一个`persisted`的布尔属性,如果页面保存在`bfcache`,属性为true,否则为false
+
+2. `pagehide`事件，会在浏览器写在页面的时候触发，在`unload`事件之前触发，必须添加window对象
+
+这个事件event对象包含`persisted`,如果是`bfcache`指为`true`,否则为`false`
+
+- hashchange 事件
+
+url参数列表发生变化时通知
+
+必须把事件处理添加给`window`对象，URL参数列表只要变化就会调用它
+event对象应该包含两个属性`oldURL`和`newURL`分别保存着参数列表变化前后的完整`URL`
+
+是否支持该方法
+
+```js
+var isSupported = ('onhashchange' in window) && (document.documentMode === undefined || document.documentMode > 7)
+```
+
+### 设备事件
+
+
+- `orientationchange` 确定用户何时将设备有横向查看模式切换为纵向查看模式
+
+![](images/jingtong_26.png)
+
+支持是3个值 0 肖像模式 90向左旋转 -90向右旋转
+
+`event`对象不包含任何有价值的信息。可以通过`window.orientation`访问到
+```js
+EventUtil.addHandler(window, "orientationchange", function(event){
+    div.innerHTML = "Current orientation is " + window.orientation;
+});
+```
+
+所有IOS设备都支持`orientationchange`事件和`window.orientation`属性
+
+- MozOrientation 事件
+`Firefix`为检测设备方向引入`MozOrientation`,该事件只提供一个平面的方向变化，在`window`上触发
+
+```js
+EventUtil.addHandler(window, "MozOrientation", function(event){
+    //响应事件
+});
+```
+
+`event`包含三个属性x、y和z,属性的值介于1到-1之间
+竖直状态下x为0，y为0，z为1
+如果向右倾斜，x会增大，反之会减小
+
+
+- deviceorientation事件
+与`MozOrientation`事件类似，在加速计检测到设备方向变化时在`window`上触发
+
+![](images/jingtong_27.png)
+
+触发`deviceorientation`事件时，事件对象中包含着每个轴相对设备静止状态下发生变化的信息
+
+`alpha` 围绕z轴旋转，y轴的度数差
+`beta` 围绕x轴旋转，z轴的度数差
+`gamma` 围绕y轴旋转，z轴的度数差
+`absolute` 布尔值，表示设备是否返回一个绝对值
+`compassCalibrated` 设备的指南针是否校准过
+
+```js
+EventUtil.addHandler(window, 'deviceorientation', function (event) {
+    var output = document.getElementById('output');
+    output.innerHTML = 'alpha' + event.alpha + 'beta' + event.beta +　'gamma' + event.gamma
+})
+```
+
+![](images/jingtong_28.png)
+
+只有ios支持
+
+- devicemotion 事件
+
+什么时候移动，不仅仅是设备方向改变，能够检测到设备是不是正在往下掉，或者是不是被走的人拿在手里面
+
+事件对象包含以下属性
+
+1. `acceleration` 包含x、y、x属性的对象，告诉每个方向的加速度
+2. `accelerationIncludingGravity` 包含一个x、y、x属性的对象，考虑轴自然重力加速度的情况下，每个方向上的加速度
+3. `interval` 以毫秒表示的时间值，必须在顶一个`devicemotion`事件触发前传入，每个时间中都是常量
+4. `rotationRate` 表示方向的`alpha`、`beta` 和 `gamma`属性对象
+
+如果读取不到，则为null，因此在使用之前应该检测他们的值是不是null
+
+只有ios实现`devicemotion`
+
+- 触摸与手势事件
+
+1. 触摸事件
+
+`touchstart` 当手指触摸屏幕时触发，放在屏幕上也会触发
+`touchmove` 当手指在屏幕上滑动时连续触发，调用`preventDefault()`可以阻止滚动
+`touchend` 手指从屏幕移开时触发
+`touchcancel` 当系统停止触摸时触发
+
+每个触摸`event`提供了鼠标事件中常见的属性
+bubbles\cancelable\view\clientX\clientY\screenX\screenY\detail\altKey\shiftKey\ctrlKy\metaKey
+
+触摸事件还包含以下三个用于跟踪触摸的属性
+
+`touches` 表示当前各种的触摸筹资的Touch对象的数组
+`targetTouchs` 特定于时间目标Touch对象的数组
+`changeTouches` 表示自上次触摸以来放生了什么改变的Touch对象数组
+
+某个Touch对象包含以下属性
+clientX
+clientY
+identifier 标识触摸的唯一id
+pageX
+pageY
+screenX
+screenY
+target
+
+```js
+function handleTouchEvent () {
+    if(event.touches.length === 1) {
+        var output = document.getElementById('output');
+        switch(event.type) {
+            case 'touchstart':
+                output.innerHTML = 'Touch start (' + event.touches[0].clientX + ',' +　event.touches[0].clientY + ')';
+                break;
+        }
+    }
+}
+
+EventUtil.addHandler(document, 'touchstart', handleTouchEvent)
+```
+
+只支持ios
+
+- 手势事件
+
+`gesturestart` 当一个手指已经在屏幕上，另一个手指又触摸时触发
+`gesturechange` 当触摸屏幕的任何一个手指的位置发生变化时触发
+`gestureend` 任何一个手指从屏幕上面移开时触发
+
+一个手指放在屏幕上，会触发`touchstart`，另一个手指又放在屏幕上会先触发`gesturestart`事件，随后触发基于该手指的`touchstart`事件
+如果一个或者两个手指在屏幕上滑动，会触发`gesturechange`，但是如果一个手指移开，将会触发`gestureend`事件，紧接着触发`touchend`事件
+
+与触摸事件一样，没有手势事件包含着标准鼠标事件属性，还包含两个额外的属性`rotation`和`scale`
+`rotation`表示手指变化引起的旋转角度，负值是逆时针旋转，政治是顺时针旋转
+`scale`表示两个手指间距距离的变化情况，从1开始，并随距离拉大而增长
+
+只支持`ios`
+
+## 内存和性能
+
+### 事件委托
+
+对事件处理程序过多的问题的解决方案就是`事件委托`。事件委托利用事件冒泡，制定一个事件处理程序，管理某一类型的所有事件
+
+```html
+<ul id="myLinks">
+    <li id="goSomewhere"></li>
+    <li id="doSomething"></li>
+    <li id="sayHi"></li>
+</ul>
+```
+如果想在li绑定点击事件可以用事件委托，只需在DOM树最高的层次上添加一个事件处理程序
+
+```js
+var list = document.getElementById('myLinks');
+EventUtil.addHandler(list, 'click', function (event) {
+    event = EventUtil.getEvent(event);
+    var target = EventUtil.getTarget(event);
+
+    switch(target.id) {
+        case 'doSomething':
+            document.title = 'I changed the document title';
+            break;
+        case 'goSomewhere':
+            console.log(22);
+            break;
+        case 'sayHi':
+            console.log('hi');
+    }
+})
+```
+
+`document`对象很快就可以访问，而且可以在页面声明周期的任何时点上为它添加事件处理程序
+在页面中设置事件处理程序所需的事件更少
+整个页面内存空间更少
+
+### 移除事件处理程序
+
+程序指定给元素时，运行中的浏览器代码与支持页面交互js代码之间就会建立一个连接，连接越多，页面执行起来就越慢
+
+如果想某个元素即将被移除，最好手工移除事件处理程序
+
+```js
+btn.click = null;
+```
+
+在页面卸载之前，通过`onunload`事件处理程序移除所有事件处理程序
+
+## 模拟事件
+
+使用js在热议时刻来触发特性的事件
+
+### DOM中的事件模拟
+
+在`document`对象上使用`createEvent（）`方法创建`event`对象，这个方法接收一个参数，即表示要创建事件类型的字符串
+
+`UIEvents` 一般化的UI事件
+`MouseEvents` 一般化的鼠标事件
+`MutationEvent` 一般化的DOM变化事件
+`HTMLEvents` 一般化的HTML事件
+
+在创建了event对象之后，还需要使用与事件有关的信息对其进行初始化
+
+最后就是触发事件，需要使用`dispathEvent()`方法，需传入一个参数，表示要触发事件
+
+- 模拟鼠标事件
+
+使用`createEvent`传入字符串`MouseEvents`,返回一个`initMouseEvent()`方法，这个方法接受15个参数，与鼠标事件中每个典型的属性一一对应
+
+`type(字符串)` 要触发的事件类型
+`bubbles(布尔值)` 事件是否冒泡
+`cancelable(布尔值)` 事件是否可以取消
+`view(AbstractView)` 事件关联的视图， 几乎总设置为 `document.defaultView`
+`detail(整数)` 与事件有关的详细信息，事件处理程序使用，通常设置为0
+`screenX(整数)` 相对屏幕x坐标
+`screenY(整数)` 相对屏幕y坐标
+`clientX(整数)` 视口的x坐标
+`clientY(整数)` 视口的y坐标
+`ctrlKey(布尔值)` 是否按下ctrl
+`altKey(布尔值)` 是否按下alt
+`shiftKey(布尔值)` 是否按下shift
+`metaKey(布尔值)` 是否按下Meta
+`button(整数)` 按下哪个鼠标键
+`relatedTarget(对象)` 表示与事件相关的对象
+
+```js
+var btn = document.getElementById('myBtn');
+var event = document.createEvent('MouseEvents');
+event.initMouseEvent('click', true, true, document.defaultView, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+btn.dispatchEvent(event); // 触发事件
+```
+模拟点击事件
+
+
+- 模拟键盘事件
+
+调用`createEvent()`并传入`KeyboardEvent`就可以创建一个键盘事件，返回事件对象包含一个`initKeyEvent()`方法，接收以下参数
+
+`type(字符串)` 触发事件类型
+`bubbles(布尔值)` 是否冒泡
+`cancelable(布尔值)` 是否可以取消
+`view(AbstractView)` 事件关联的视图，一般设置为`document.defaultView`
+`key(布尔值)` 按下的键码
+`location(整数)` 按下哪个键 0 朱建平 1代表作 2 表示有 3 表示数字键盘 4 移动设置 5 手柄
+`modifiers(字符串)` 空格分割的修改键列表 如`shift`
+`repeat(整数)` 一行中按这个键多少次
+
+```js
+if(document.implementation.hasFeature('KeyboardEvents', '3.0')) {
+    event.initKeyboardEvent('keydown', true, true, document.defaultView, 'a', 0, 'shift', 0);
+}
+
+dom.dispatchEvent(event); // 触发事件
+```
+
+模拟按住shift 同事按下a
+
+只能在firefox中使用
+
+在firefox中，调用`createEvent()`并传入`KeyEvents`就可以创建一个键盘事件，返回的事件对象会包含一个`initKeyEvent()`放啊
+`type(字符串)` 要触发的事件类型
+`bubbles(布尔值)` 事件是否冒泡
+`cancelable(布尔值)` 事件是否可以取消
+`view(AbstractView)` 事件关联的视图， 几乎总设置为 `document.defaultView`
+`ctrlKey(布尔值)` 是否按下ctrl
+`altKey(布尔值)` 是否按下alt
+`shiftKey(布尔值)` 是否按下shift
+`metaKey(布尔值)` 是否按下Meta
+`keyCode(整数)` 被按下或者释放的键的键码，默认0
+`charCode(整数)` 通过按键生成的字符的ASCII编码，默认0
+
+```js
+var event = doucment.createEvent('KeyEvent');
+event.initKeyEvent('keypress', true, true, document.defaultView,false,false,false,false, 65, 65);
+textbox.dispatchEvent(event);
+```
+- 模拟其他事件
+
+如果模拟变动事件可以使用 `createEvent('MutationEvents')`，,创建一个包含`initMutationEvent()`方法的变动事件对象，
+方法接受type\bubbles\cancelable\relatedNode\preValue\newValue\attrName\attrChange
+
+```js
+var event = document.createEvent("MutationEvents");
+event.initMutationEvent("DOMNodeInserted", true, false, someNode, "","","",0);
+target.dispatchEvent(event);
+```
+
+模拟HTML事件，同样需要先创建一个`event`对象 通过`creatEvent('HTMLEvents')`,再使用`initEvent()`方法来初始化即可
+
+```js
+var event = document.createEvent('HTMLEvents');
+event.initEvent('focus', true, false);
+target.dispatchEvent(event)
+```
+
+- 自定义DOM事件
+
+创建新的自定义事件，调用`createEvent('CustomEvent')`,返回对象`initCustomEvent()`方法，接受四个参数
+
+`type(字符串)`  触发事件的类型
+`bubble(布尔值)` 事件是否应该冒泡
+`cancelable(布尔值)` 是否可以取消
+`detail(对象)` 保存在 `event`对象中的`detail`属性中
+
+### IE中的事件模拟
+
+先创建`event`对象
+调用`document.createEventObject()`,创建`event`对象，手工为这个对象添加必要的信息，最后在目标上调用`fireEvent()`方法，接受两个参数：事件处理程序的名称和event对象
+调用`fireEvent()`方法时，会自动为event对象添加`srcElement`和`type`属性
+
+```js
+var btn = document.getElementById('myBtn');
+var event = document.createEventObject();
+
+event.screenX = 100;
+event.screenY = 0;
+event.clientY = 0;
+event.ctrlKey = false;
+event.altKey = false;
+event.shiftKey = false;
+event.button = 0;
+
+btn.fireEvent('onclick', event);
+```

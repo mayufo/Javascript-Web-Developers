@@ -88,67 +88,109 @@ var EventUtil = {
         }
     }
 }
+//
+// var div = document.getElementById('myDiv');
+// EventUtil.addHandler(div, 'mousedown', function (event) {
+//     event = EventUtil.getEvent(event);
+//     console.log(EventUtil.getButton(event));
+// });
+//
+// EventUtil.addHandler(window, 'load', function (event) {
+//     var list = document.getElementById('myList');
+//     EventUtil.addHandler(document, 'DOMSubtreeModified', function (event) {
+//         console.log(event.type);
+//         console.log(event.target);
+//     })
+//
+//     EventUtil.addHandler(document, 'DOMNodeRemoved', function (event) {
+//         console.log(event.type);
+//         console.log(event.target);
+//         console.log(event.relatedNode);
+//     })
+//
+//     EventUtil.addHandler(list.firstChild, 'DOMNodeRemovedFromDocument', function (event) {
+//         console.log(event.type);
+//     })
+// })
+//
+// EventUtil.addHandler(window, 'load', function (event) {
+//     var list = document.getElementById('myList');
+//     var item = document.createElement('li');
+//     EventUtil.addHandler(document, 'DOMSubtreeModified', function (event) {
+//         console.log(event.type);
+//         console.log(event.target);
+//     })
+//
+//     EventUtil.addHandler(document, 'DOMNodeInserted', function (event) {
+//         console.log(event.type);
+//         console.log(event.target);
+//         console.log(event.relatedNode);
+//     })
+//
+//     EventUtil.addHandler(item, 'DOMNodeInsertedIntoDocument', function (event) {
+//         console.log(event.type);
+//     })
+// })
+//
+// EventUtil.addHandler(window, "load", function(event){
+//     var div = document.getElementById("myDiv");
+//     EventUtil.addHandler(div, "contextmenu", function(event){
+//         event = EventUtil.getEvent(event);
+//         EventUtil.preventDefault(event);
+//         var menu = document.getElementById("myMenu");
+//         menu.style.left = event.clientX + "px";
+//         menu.style.top = event.clientY + "px";
+//         menu.style.visibility = "visible";
+//     });
+//     EventUtil.addHandler(document, "click", function(event){ document.getElementById("myMenu").style.visibility = "hidden";
+//     });
+// });
+//
+// EventUtil.addHandler(window, 'beforeunload', function (event) {
+//     event = EventUtil.getEvent(event);
+//     var message = 'miss you if you go';
+//     event.returnValue = message;
+//     return message;
+// })
 
-var div = document.getElementById('myDiv');
-EventUtil.addHandler(div, 'mousedown', function (event) {
+// (function(){
+//     var showCount = 0;
+//     EventUtil.addHandler(window, "load", function(){
+//         alert("Load fired");
+//     });
+//     EventUtil.addHandler(window, "pageshow", function(){
+//         showCount++;
+//         alert("Show has been fired " + showCount + " times.");
+//     });
+// })();
+
+// function handleTouchEvent () {
+//     if(event.touches.length === 1) {
+//         var output = document.getElementById('output');
+//         switch(event.type) {
+//             case 'touchstart':
+//                 output.innerHTML = 'Touch start (' + event.touches[0].clientX + ',' +　event.touches[0].clientY + ')';
+//                 break;
+//         }
+//     }
+// }
+//
+// EventUtil.addHandler(document, 'touchstart', handleTouchEvent)
+
+var list = document.getElementById('myLinks');
+EventUtil.addHandler(list, 'click', function (event) {
     event = EventUtil.getEvent(event);
-    console.log(EventUtil.getButton(event));
-});
+    var target = EventUtil.getTarget(event);
 
-EventUtil.addHandler(window, 'load', function (event) {
-    var list = document.getElementById('myList');
-    EventUtil.addHandler(document, 'DOMSubtreeModified', function (event) {
-        console.log(event.type);
-        console.log(event.target);
-    })
-
-    EventUtil.addHandler(document, 'DOMNodeRemoved', function (event) {
-        console.log(event.type);
-        console.log(event.target);
-        console.log(event.relatedNode);
-    })
-
-    EventUtil.addHandler(list.firstChild, 'DOMNodeRemovedFromDocument', function (event) {
-        console.log(event.type);
-    })
+    switch(target.id) {
+        case 'doSomething':
+            document.title = 'I changed the document title';
+            break;
+        case 'goSomewhere':
+            console.log(22);
+            break;
+        case 'sayHi':
+            console.log('hi');
+    }
 })
 
-EventUtil.addHandler(window, 'load', function (event) {
-    var list = document.getElementById('myList');
-    var item = document.createElement('li');
-    EventUtil.addHandler(document, 'DOMSubtreeModified', function (event) {
-        console.log(event.type);
-        console.log(event.target);
-    })
-
-    EventUtil.addHandler(document, 'DOMNodeInserted', function (event) {
-        console.log(event.type);
-        console.log(event.target);
-        console.log(event.relatedNode);
-    })
-
-    EventUtil.addHandler(item, 'DOMNodeInsertedIntoDocument', function (event) {
-        console.log(event.type);
-    })
-})
-
-EventUtil.addHandler(window, "load", function(event){
-    var div = document.getElementById("myDiv");
-    EventUtil.addHandler(div, "contextmenu", function(event){
-        event = EventUtil.getEvent(event);
-        EventUtil.preventDefault(event);
-        var menu = document.getElementById("myMenu");
-        menu.style.left = event.clientX + "px";
-        menu.style.top = event.clientY + "px";
-        menu.style.visibility = "visible";
-    });
-    EventUtil.addHandler(document, "click", function(event){ document.getElementById("myMenu").style.visibility = "hidden";
-    });
-});
-
-EventUtil.addHandler(window, 'beforeunload', function (event) {
-    event = EventUtil.getEvent(event);
-    var message = 'miss you if you go';
-    event.returnValue = message;
-    return message;
-})
