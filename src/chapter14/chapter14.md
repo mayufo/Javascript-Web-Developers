@@ -284,3 +284,5 @@ EventUtil.addHandler(textbox, 'paste', function (event) {
 })()
 ```
 没有考虑隐藏字段
+
+### HTML5约束验证API
