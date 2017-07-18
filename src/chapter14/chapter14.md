@@ -219,3 +219,68 @@ EventUtil.addHandler(textbox, "keypress", function(event){
 对象有三个方法`getDate()`、`setDate()`和`clearDate()`，
 `getDate()`接受一个参数，即取得数据的格式，IE支持有两种数据格式`text`和`URL`其他支持`MINE`
 `setDate()`第一个参数是数据类型，IE支持有两种数据格式`text`和`URL`其他支持`MINE`， 第二个参数是剪切板中的文本
+
+成功将文本放在剪贴板中，都会返回true,否则返回false
+```js
+var EventUtil = {
+    getClipboardText: function (event) {
+        var clipboardData = (event.clipboardData || window.clipboardData);
+        return clipboardData.getData('text');
+    },
+    setClipboardText: function (event, value) {
+        if(event.clipboardData) {
+            return event.clipboardData.setData('text/plain', value);
+        } else if (window.clipboardData) {
+            return window.clipboardData.setData('text', value);
+        }
+    }
+}
+```
+
+在粘贴中要确保文本中包含的某些数值符合要求，如果无效，就取消默认的行为
+
+确保剪贴过来的都是数字，否则取消默认行为
+
+```js
+EventUtil.addHandler(textbox, 'paste', function (event) {
+    event = EventUtil.getEvent(event);
+    var text = EventUtil.getClipboardText(event);
+
+    if (!/^\d*$/.test(text)){
+        EventUtil.preventDefault(event);
+    }
+})
+```
+
+### 自动切换焦点
+
+为增强易用性，前一个文本框字符达到最大数量后，自动将焦点切换到下一个文本框
+
+```js
+(function () {
+  function tabForward() {
+      event = EventUtil.getEvent(event);
+      var target = EventUtil.getTarget(event);
+      if(target.value.length == target.maxLength) {
+          var form = target.form;
+          for(var i = 0, len = form.elements.length; i < len; i++) {
+              if(form.elements[i] == target) {
+                  if(form.elements[i+1]) {
+                      form.elements[i+1].focus();
+                  }
+                  return;
+              }
+          }
+      }
+  }
+
+    var textbox1 = document.getElementById("txtTel1");
+    var textbox2 = document.getElementById("txtTel2");
+    var textbox3 = document.getElementById("txtTel3");
+    EventUtil.addHandler(textbox1, "keyup", tabForward);
+    EventUtil.addHandler(textbox2, "keyup", tabForward);
+    EventUtil.addHandler(textbox3, "keyup", tabForward);
+
+})()
+```
+没有考虑隐藏字段
