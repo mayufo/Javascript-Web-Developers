@@ -414,3 +414,19 @@ img.src = 'http://www.example.com/test?name=Nicholas' //请求发送一个name�
 1. 只能发送GET请求
 2. 无法访问服务器的响应文本
 
+### JSONP
+
+```js
+callback({'name': 'may'})
+```
+
+JSON由两部分组成：回调函数和数据。
+回调函数是响应到来时应该在页面中调用的函数。回调函数的名字一般在请求中指定
+JSONP请求
+```
+http://baidu.com/json/?callback=handleResponse
+```
+
+这里指定的回调韩式是handleResponse()
+
+JSON是通过动态<script>元素来使用的，使用可以为src指定跨域URL
