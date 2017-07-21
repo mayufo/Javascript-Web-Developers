@@ -416,8 +416,10 @@ img.src = 'http://www.example.com/test?name=Nicholas' //请求发送一个name�
 
 ### JSONP
 
+利用script标签没有跨域限制的的漏洞，允许用户传递一个callback参数给服务端，然后服务器返回数据时将callback参数作为函数名包裹住json数据，客户端就可以钉子自己的函数处理返回数据
+
 ```js
-callback({'name': 'may'})
+handleResponse({'name': 'may'})
 ```
 
 JSON由两部分组成：回调函数和数据。
@@ -427,6 +429,200 @@ JSONP请求
 http://baidu.com/json/?callback=handleResponse
 ```
 
-这里指定的回调韩式是handleResponse()
+这里指定的回调韩式是`handleResponse()`
 
 JSON是通过动态<script>元素来使用的，使用可以为src指定跨域URL
+
+`JSONP`的不足
+
+1. JSONP从其他语种加载代码执行
+2. JSONP请求是否失败并不容易
+
+### Comet
+
+1. `Comet`是一种服务器向页面推送数据的技术，有两种实现方法`长轮询`和`流`
+`短轮询`浏览器定时向服务器发送请求，看有没有更新的数据
+![](images/jingtong_31.png)
+`长轮询`页面发起一个服务器请求，然后服务器一直保持连接代开，直到有数据可发送，发送完数据之后，浏览器关闭连接，随即又发起一个到服务器的新请求
+![](images/jingtong_32.png)
+
+区别在于服务器如何发送数据
+短轮询是服务器立即发送相应，无论数据是否有效
+长轮询是等待发送响应
+
+2. HTTP流
+
+在页面的整个生命周期是使用一个HTTP连接，具体来说就是浏览器想服务器发送一个请求，服务器保持连接打开，然后周期性的向浏览器发送数据
+
+随着不断从服务器接收数据，`readyState`会周期性变为3， 当变为3时`responseText`属性就会保存接收所有数据，
+此时就要比较此前接收的数据，决定从什么位置开始取得新的数据
+
+```js
+function createStreamingClient(url, progress, finished) {
+    var xhr = new XMLHttpRequest(), received = 0;
+    xhr.open('get', url, true);
+    xhr.onreadystatechange = function () {
+        var result;
+        if(xhr.readyState == 3) {
+            result = xhr.responseText.substring(received)
+            received += result.length; // 只去最新数据并调用计数器
+            progress(result);
+        } else if (xhr.readyState == 4) {
+            finished(xhr.responseText);
+        }
+    }
+    xhr.send(null)
+    return xhr;
+}
+
+var client = createStreamingClient('streaming.php', function (data) {
+    console.log('receive' + data);
+}, function (data) {
+    console.log('finished')
+})
+```
+
+要连接的URL,接收数据时调用的函数及关闭连接时调用的函数
+
+只要`readystatechange`事件发生，`readyState`值为3，就对`responseText`进行分割取得最新数据
+
+3. 缺点  
+管理Comet的链接很容易出错，需要事件不断改进
+
+### 服务器发送事件
+
+SSE API用于创建到服务器的单向链接，服务器通过这个连接可以发送任意数量的数据，服务器的响应MIME类型必须是 `text/event-stream`,浏览器我都js API能解析格式输出
+
+1. SSE API
+
+要预订新的事件流，创建新的EventSource对象
+
+```js
+var source = new EventSource('myevents.php')
+```
+
+传入的URL必须与创建对象的页面同源，EventSource有一个`readyState`属性 
+
+`0` 表示正连接到服务器
+`1` 打开连接
+`2` 表示关闭连接
+
+三个事件
+
+`open` 简历连接时触发
+`message` 从服务器接收到新事件时触发
+`error` 在无法建立连接时触发
+
+```js
+source.onmessage = function(event) {
+  var data = event.data;
+}
+```
+
+如果想强制断开连接不再重新连接，可以调用`close()`方法
+
+```js
+source.close();
+```
+
+2. 事件流
+
+所谓的通过持久的HTTP响应发送，这个响应的MINE类型为 `text/event-stream`,响应的格式是纯文本，最简单的情况是每个数据项都带前缀data
+事件流第一个message事件返回 event.data 值为foo
+
+```
+data: foo
+
+data: bar
+```
+
+
+### Web Sockets
+
+Web Sockets的目标是在一个单独的持久连续上提供双工、双向通信，在取得服务器县影后，建立的连接就会使用HTTP升级从HTTP协议交换为Web Socket协议，只有支持这种协议的服务器才能工作
+
+`Web Sockets`使用了自定义的协议，`wss://`
+
+服务器和客户端之间发送非常少的数据，不许担心HTTP字节的开销，非常适合移动，但有安全隐患
+
+1. Web Sockets API
+
+先实例一个WebSocket对象
+
+```js
+var socket = new WebSocket('ws://www.example.com/server.php')
+```
+
+必须传入绝对URL，同源策略不适用
+
+WebSocket的状态
+
+`WebSocket.OPENING(0)` 正在建立连接
+`WebSocket.OPEN(1)` 已经建立连接
+`WebSocket.CLOSING(2)` 正在关闭连接
+`WebSocket.CLOSE(3)` 已经关闭连接
+
+`WebSocket`没有`readystatechange`事件，状态值从0开始
+
+要关闭连接，可以调用`close()`方法
+
+2. 发送和接受数据
+
+`WebSocket`打开之后，可以通过连接发送和接收数据，使用`send()`方法传入字符串
+
+```js
+socket.send('hello world')
+```
+
+当服务器向客户端发来消息时，`WebSocket`就会触发message事件，把返回的数据保存在`event.data`中
+
+3. 其他事件
+
+WebSocket对象还有其他三个事件
+
+`open` 成功建立连接时触发
+`error` 发生错误触发，连接不能持续
+`close` 在连接关闭时触发
+
+三个事件中只用`close`有额外的信息，有三个额外的属性`wasClean`、`code`和`reason`
+`wasClean`是布尔值，连接是否已经明确第关闭
+`code`服务器返回的数值状态码
+`reason`字符串，包含服务器发回的消息
+
+```js
+socket.onopen = function ()　{
+    
+}
+
+socket.onerror = function() {
+  
+}
+
+socket.onclose = function() {
+  
+}
+```
+
+### SSE与Web Sockets
+
+在面对具体用例，应该考虑
+1. 是否有自由度简历和维护`WebSockets`服务器?
+`WebSocket`协议不同于HTTP，现有服务器不能用于`WebSocket`通信。SSE是常规HTTP通信，因此现有服务器就可以满足需求
+2. 到底需不需要双向通信?
+SSE容易实现，如果用例双向通信，`WebSockets`显然更好
+
+
+## 安全
+
+是否有权限访问要请求的数据
+
+对于未被收钱系统有权访问某个资源的情况成为CSRF
+
+要求以SSL连接来访问可以通过XHR请求资源
+要求每一次请求都要附带经过相应算法计算得到验证码
+
+以下不会对CSRF起作用
+
+- 要求发送POST而不是GET请求
+- 检查来源URL以确定是否可信
+- 给予cookie信息进行验证
