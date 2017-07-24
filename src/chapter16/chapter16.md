@@ -101,3 +101,57 @@ var text = dataTransfer.getData('Text') ||　dataTransfer.getData('text/plain');
 ```
 
 ### dropEffect与effectAllowed
+
+`dataTransfer`对象还能通过它来确定被拖动的元素以及放置目标的元素能够接收什么操作，该对象有两个属性`dropEffect`和`effectAllowed`
+
+`dropEffect`被拖动的元素能够执行哪种放置行为，有4种可能值
+
+`none`不能把拖动的元素放在这里
+`move`应该把拖动的元素移动到放置目标
+`copy`应该把拖动的元素复制到放置目标
+`link`表示放置目标会打开拖动的元素
+
+`dropEffect`属性要搭配`effectAllowed`属性才有用，`effectAllowed`属性表示允许拖动元素的那种`dropEffect`
+
+`uninitialized` 没有给拖动的元素设置任何放置行为
+`none` 被拖动的元素不能有任何行为
+`copy` 只允许值为`copy`的`dropEffect`
+`link` 只允许值为`link`的`dropEffect`
+`move` 只允许值为`move`的`dropEffect`
+`copyLink` 允许值为`copy`和`link`的`dropEffect`
+`copyMove` 允许值为`copy`和`move`的`dropEffect`
+`linkMove` 允许值为`link`和`move`的`dropEffect`
+`all` 允许任意`dropEffect`
+
+假设允许用户吧文本框中的文本拖放到一个div元素中，必须将`dropEffect`和`effectAllowed`设置为`move`
+
+### 可拖动
+
+`HTML`中规定`draggable`属性，表示元素是否可以拖动
+
+```html
+<div draggable="true"></div>
+```
+### 其他成员
+`dataTransfer`对象还包括以下方法
+`addElement(element)` 为拖动操作增加一个元素，只影响数据，不影响外观
+`clearData(format)` 清除特定格式保存的数据
+`setDragImage(element, x, y)` 指定一副图像，当拖动发生时，显示在光标下方，接收三个参数html元素和光标在图像中的x,y坐标
+`types` 当前保存的数据类型
+
+## 媒体元素
+
+插入视频
+```html
+<video src="conference.mp4" id="myViedo">Video player not available</video>
+```
+插入音频
+```html
+<audio src="song.mp3" id="myAudio">Audio player not available</audio>
+```
+
+至少包含src属性，指向加加载媒体的文件
+设置width和height
+poster属性制定图像URL可以在加载视频内容期间显示衣服图像
+标签中`controls`属性，以为这浏览器显示UI控件
+如果不支持，可以指定多个不同的媒体来源，不用再标签中制定src
