@@ -155,3 +155,139 @@ var text = dataTransfer.getData('Text') ||　dataTransfer.getData('text/plain');
 poster属性制定图像URL可以在加载视频内容期间显示衣服图像
 标签中`controls`属性，以为这浏览器显示UI控件
 如果不支持，可以指定多个不同的媒体来源，不用再标签中制定src
+
+```html
+<video id="myVideo">
+    <source src="conference.webm" type="video/webm; codecs='vp8, vorbis'">
+    <source src="conference.ogv" type="video/ogg; codecs='theora, vorbis'">
+    <source src="baidu.mpg">
+    Video player not available.
+</video>
+```
+
+```html
+<audio src="myAudio">
+    <source src="song.ogg" type="audio/ogg">
+    <source src="song.mp3" type="audio/mpeg">
+    Audio player not available
+</audio>
+```
+
+### 属性
+
+`autoplay` 布尔  设置autoplay的标志
+`buffered` 时间范围 表示已下载的缓存事件范围的对象
+`bufferedBytes` 字节范围  表示已下载的缓冲字节范围对象
+`bufferingRate` 整数 下载过程中每秒平均接收到的位数
+`bufferingThrottled` 布尔 浏览器是否对缓冲进行了节流
+`controls` 布尔 取得或设置controls属性，隐藏浏览器内置的控件
+`currentLoop` 整数 媒体文档循环次数
+`currentSrc` 字符串 当前播放的媒体文件的URL
+`currentTime` 浮点数  已播放的秒数
+`defaultPlaybackRate` 浮点数 取得或设置默认的播放速度，默认值为1.0，开发设置
+`duration` 浮点 媒体总播放时间（秒）
+`ended` 布尔 是否播放完
+`loop` 布尔 完成播放后是否从头开始播放
+`muted` 布尔 媒体文件是否静音
+`networkState` 整数 表示当前媒体的网络连接状态 0 表示空 1表示正在加载 2 表示正在加载元数据 3 表示已经加载了第一帧 4 表示加载完成
+`paused` 布尔 播放器是否暂停
+`playbackRate` 浮点数  设置播放速度，用户可以改变这个值
+`played` 时间范围 已经播放的事件
+`readyState` 整数 媒体是否就绪 0 不可用 1 表示可以显示当前帧 2 表示可以播放 3 媒体可以从头到尾播放
+`seekable` 时间范围 可以搜索的事件范围
+`seeking` 布尔值 表示播放是否正移动到媒体文件中的新位置
+`src` 字符串 媒体文件来源
+`start` 浮点数 媒体文件中开始播放的位置，秒表示
+`totalBytes` 整数 当前资源所需的总字节数
+`videoHeight` 整数 返回视频的高度用于video
+`videoWidth` 整数 返回视频的宽度用于video
+`volume` 浮动书 取得或设置当前音频的音量0.0到1.0
+
+### 事件
+事件    触发时机
+`abort` 下载中断
+`canplay` 播放时，readyState值为2
+`canplaythrough` 播放可继续，应该不会中断readState3
+`canshowcurrentframe` 当前帧已经下载完成，readyState值为1
+`dataunavailable` 没有数据不能播放 readyState值为0
+`durationchange` duration属性的值改变
+`emptied` 网络连接关闭
+`empty` 发生错误阻止了媒体下载
+`ended` 媒体已播放到末尾，播放停止
+`error` 下载期间发生网络错误
+`load` 所有媒体已经加载完成，建议使用canplaythrough
+`loadeddata ` 媒体第一帧已加载完成
+`loadedmetadata` 美的元数据已加载完成
+`loadstart` 下载已经开始
+`pause` 播放暂停
+`play` 媒体已接收到指令开始播放
+`playing`  媒体已事件开始播放
+`progress` 正在下载
+`ratechange` 播放媒体的速度改变
+`seeked` 搜索接收
+`seeking` 正移动到新位置
+`stalled` 浏览器尝试下载，但未接收到数据
+`timeupdate`  currentTime以不合理或意外的方式更新
+`volumechange` volume属性值或muted属性值已改变
+`waiting 播放暂停，等待下载更多数据
+
+### 自定义媒体播放器
+
+给按钮添加事件处理程序，通过video元素的load事件处理程序，设置了加载完视频后显示播放时间
+
+### 检查解码器的支持情况
+
+`canPlayType`能够检测浏览器是否支持某种格式和编码器，接收一种格式或编解码器字符串，返回`probably`、`maybe`或空字符串
+
+```js
+if(audio.canPlayType('audio/mpeg')) { 
+ }
+```
+
+如果想更具体的确定可以再传入编码格式
+
+```js
+if (audio.canPlayType("audio/ogg; codecs=\"vorbis\"")){
+
+}
+```
+![](images/jingtong_33.png)
+
+### Audio类型
+
+audio元素还有一个原生的js构造函数Audio,可以再任何时候播放音频
+```js
+var audio = new Audio('sound.mps');
+EventUtil.addHandler(audio, 'canplaythrought', function(event) {
+  audio.play();
+})
+```
+
+## 历史状态管理
+
+历史状态管理让我们不必写在当前页面即可修改浏览器的历史状态栈，用户通过前进后退再页面状态间切换
+通过使用`hashchange`事件，可以知道URL的参数发生什么变化
+`hashchange.pushState()`接收三个参数 状态对象、新状态的标题和可选的相对URL
+```js
+history.pushState({name:'Nicholas'}, 'Nicholas page', 'nicholas.html');
+```
+执行后新的状态信息会被加入历史状态栈，浏览器地址会变成新的相对URL，但不会向服务器发送请求，即使状态改变之后查询location.href也会返回与地址栏中相同的地址
+第二个参数还不能实现
+
+前进后退会触发`popstate`事件，该事件对象有个state属性这个属性包含着第一个参数传递给pushState()的状态对象
+
+```js
+EventUtil.addHandler(window, 'popstate', function(event) {
+  var state = event.state;
+  if(state) {  // 第一个页面加载state为空时
+      processState(state);
+  }
+})
+```
+
+浏览器加载的第一个页面没有状态
+当更新当前状态，可以调用`replaceState()`参入的参数和`pushState()`相同
+
+```js
+history.replaceState({name:"Greg"}, "Greg's page");
+```
