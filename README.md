@@ -40,3 +40,4 @@ npm run dev
 - 学习chapter23
 - 学习chapter24
 - 将每个章节做成单页面
+- 将常用的方法抽出一个js
