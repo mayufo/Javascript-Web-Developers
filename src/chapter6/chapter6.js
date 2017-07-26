@@ -416,10 +416,10 @@ var person6 = {
 var anotherPerson6 = createAnother(person6);
 anotherPerson6.sayHi();
 
-function inheritPrototype(subType, superType) {
-    var prototype = object(subType, superType);
-    prototype.constructor = subType;
-    subType.prototype = prototype;
+function inheritPrototype(subType, superType){
+    var prototype = Object(superType.prototype); // 创建对象
+    prototype.constructor = subType; // 增强对象
+    subType.prototype = prototype; // 制定对象
 }
 
 

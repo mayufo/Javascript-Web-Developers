@@ -815,8 +815,8 @@ SubType.prototype.sayAge = function(){
 使用寄生式继承来继承超类的原型，然后将结构制定个子类的原型
 
 ```js
-function inheritPrototype(subType, superType) {
-    var prototype = object(subType, superType);  // 创建对象
+function inheritPrototype(subType, superType){
+    var prototype = Object(superType.prototype); // 创建对象
     prototype.constructor = subType; // 增强对象
     subType.prototype = prototype; // 制定对象
 }

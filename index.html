@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title><%= htmlWebpackPlugin.options.title %></title>
 </head>
-<body>
+<body >
 <!--&lt;!&ndash; chapter10 start &ndash;&gt;-->
 <!--<div>123</div>-->
 <!--<ul class="user bd list" data-appId="12345" data-myname="Nicholas">-->
@@ -69,17 +69,23 @@
 <!--<div class="editable" id="richedit" contenteditable></div>-->
 
 <!-- chapter16 start -->
-<div class="mediaplayer">
-    <div class="video">
-        <video id="player" src="movie.mov" poster="mymovie.jpg"
-               width="300" height="200">
-            Video player not available.
-        </video>
-    </div>
-    <div class="controls">
-        <input type="button" value="Play" id="video-btn">
-        <span id="curtime">0</span>/<span id="duration">0</span>
-    </div>
-</div>
+<!--<div class="mediaplayer">-->
+    <!--<div class="video">-->
+        <!--<video id="player" src="movie.mov" poster="mymovie.jpg"-->
+               <!--width="300" height="200">-->
+            <!--Video player not available.-->
+        <!--</video>-->
+    <!--</div>-->
+    <!--<div class="controls">-->
+        <!--<input type="button" value="Play" id="video-btn">-->
+        <!--<span id="curtime">0</span>/<span id="duration">0</span>-->
+    <!--</div>-->
+<!--</div>-->
+<!-- chapter22 start -->
+
+<!--<div  id="myDiv" style="background: indianred; width: 20px;position: absolute" >22</div>-->
+<div id="myDiv1" class="draggable" style="background:red;width:100px;height:100px;position:absolute"></div>
+<div id="myDiv2" class="draggable" style="background:blue;width:100px;height:100px;position:absolute;left:100px"></div>
+<div id="status"></div>
 </body>
 </html>
