@@ -14,26 +14,26 @@ npm run dev
 ```
 # done
 
-- 用webpack 尝试搭建
-- 学习chapter1
-- 学习chapter2
-- 学习chapter3
-- 学习chapter4
-- 学习chapter5
-- 学习chapter6
-- 学习chapter7
-- 学习chapter8
-- 学习chapter9
-- 学习chapter10
-- 学习chapter11
-- 学习chapter12
-- 学习chapter13
-- 学习chapter14
-- 学习chapter15
-- 学习chapter16
-- 学习chapter20
-- 学习chapter21
-- 学习chapter22
+- ~~用webpack 尝试搭建~~
+- ~~学习chapter1~~
+- ~~学习chapter2~~
+- ~~学习chapter3~~
+- ~~学习chapter4~~
+- ~~学习chapter5~~
+- ~~学习chapter6~~
+- ~~学习chapter7~~
+- ~~学习chapter8~~
+- ~~学习chapter9~~
+- ~~学习chapter10~~
+- ~~学习chapter11~~
+- ~~学习chapter12~~
+- ~~学习chapter13~~
+- ~~学习chapter14~~
+- ~~学习chapter15~~
+- ~~学习chapter16~~
+- ~~学习chapter20~~
+- ~~学习chapter21~~
+- ~~学习chapter22~~
 
 ## need to do
 
