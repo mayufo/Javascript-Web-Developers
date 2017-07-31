@@ -130,3 +130,233 @@ document.cookie = encodeURIComponent("name") + "=" +
                   encodeURIComponent("Nicholas") + "; domain=.wrox.com; path=/";
 ```
 
+基本的cookie操作有三种：读取写入和删除
+
+```js
+var CookieUtil = {
+    get: function(name) {
+      var cookieName = encodeURIComponent(name) +　"=",
+      cookieStart = document.cookie.indexOf(cookieName),
+      cookieVaule = null;
+      if(cookieStart > -1) {
+          var cookieEnd = document.cookie.indexOf(";", cookieStart);
+          if(cookieEnd == -1) {
+              cookieEnd = document.cookie.length;
+          }
+          cookieVaule = decodeURIComponent(document.cookie.substring(cookieStart +cookieName.length, cookieEnd));
+          return cookieVaule;
+      }
+    },
+    set: function(name, value, expires, path, domain, secure) {
+      var cookieText = encodeURIComponent(name) + "=" +
+                        encodeURIComponent(value);
+      if(expires instanceof Date) {
+          cookieText += ";expires=" + expires.toGMTString();
+      }
+      
+      if(path) {
+          cookieText += ";path=" + path;
+      }
+      
+      if(domain) {
+          cookieText += ";domain=" + domain;
+      }
+      
+      if(secure) {
+          cookieText += ";secure";
+      }
+      
+      document.cookie = cookieText;
+    },
+    
+    unset: function(name, path, domain, secure) {
+      this.set(name, "", new Date(0), path, domain, secure);
+    } 
+}
+```
+
+`cookieUtil.get`根据cookie的名字获取相应的值
+`cookieUtil.set`接收cookie的名称，cookie的值，cookie的有效时间，cookie的可选URL路径，可选域，以及可选的表示是否要添加secure标志的布尔值
+`cookieUtil.unset`删除cookie，接收要删除的cookie的名称、可选路径参数、可选的域参数和可选的安全参数
+
+- 子cookie
+
+为了绕开浏览器的子域名下的cookie数限制，一些开发人员使用了子cookie的概念
+
+子cookie格式如下
+
+```js
+name=name1=value1&name2=value2
+```
+
+```js
+var SubCookieUtil = {
+    get: function (name, subName){
+        var subCookies = this.getAll(name);
+        if (subCookies){
+            return subCookies[subName];
+        } else {
+            return null;
+        }
+    },
+    getAll: function(name){
+        var cookieName = encodeURIComponent(name) + "=",
+            cookieStart = document.cookie.indexOf(cookieName),
+            cookieValue = null,
+            cookieEnd,
+            subCookies,
+            i,
+            len,
+            parts,
+            result = {};
+        if (cookieStart > -1){
+            cookieEnd = document.cookie.indexOf(";", cookieStart);
+            if (cookieEnd == -1){
+                cookieEnd = document.cookie.length;
+            }
+            cookieValue = document.cookie.substring(cookieStart +
+                cookieName.length, cookieEnd);
+            if (cookieValue.length > 0){
+                subCookies = cookieValue.split("&");
+                for (i=0, len=subCookies.length; i < len; i++){
+                    parts = subCookies[i].split("=");
+                    result[decodeURIComponent(parts[0])] =
+                        decodeURIComponent(parts[1]);
+                }
+                return result;
+            }
+        }
+        return null;
+    }
+};
+```
+
+`get()`方法接受两个参数cookie的名字和子cookie的名字，其他就调用getAll()获取所有的子cookie，然后返回所需的那一个
+
+```js
+//假设 document.cookie=data=name=Nicholas&book=Professional%20JavaScript
+
+var data = SubCookieUtil.getAll('data');
+console.log(data.name); // "Nicholas"
+
+
+console.log(SubCookieUtil.get("data", "name")); // "Nicholas"
+```
+```js
+var SubCokkieUtil = {
+    set: function (name, subName, value, expires, path, domain, secure) {
+    
+            var subcookies = this.getAll(name) || {};
+            subcookies[subName] = value;
+            this.setAll(name, subcookies, expires, path, domain, secure);
+    
+        },
+    
+        setAll: function(name, subcookies, expires, path, domain, secure){
+    
+            var cookieText = encodeURIComponent(name) + "=",
+                subcookieParts = new Array(),
+                subName;
+    
+            for (subName in subcookies){
+                if (subName.length > 0 && subcookies.hasOwnProperty(subName)){
+                    subcookieParts.push(encodeURIComponent(subName) + "=" + encodeURIComponent(subcookies[subName]));
+                }
+            }
+    
+            if (subcookieParts.length > 0){
+                cookieText += subcookieParts.join("&");
+    
+                if (expires instanceof Date) {
+                    cookieText += "; expires=" + expires.toGMTString();
+                }
+    
+                if (path) {
+                    cookieText += "; path=" + path;
+                }
+    
+                if (domain) {
+                    cookieText += "; domain=" + domain;
+                }
+    
+                if (secure) {
+                    cookieText += "; secure";
+                }
+            } else {
+                cookieText += "; expires=" + (new Date(0)).toGMTString();
+            }
+            document.cookie = cookieText;
+        }
+}
+```
+设置子cookie,也有两种方法`set`和`Allset`
+
+`set`方法接受7个参数cookie名称、子cookie名称、子cookie值、可选的cookie失效日期或日期对象、可选的cookie路径、可选的cookie域和可选布尔secure标志
+
+```js
+SubCookieUtil.set('data', 'name', 'may');
+```
+
+```js
+var SubCookieUtil = {
+    unset: function (name, subName, path, domain, secure){
+            var subcookies = this.getAll(name);
+            if (subcookies){
+                delete subcookies[subName];
+                this.setAll(name, subcookies, null, path, domain, secure);
+            }
+        },
+    
+    unsetAll: function(name, path, domain, secure){
+        this.setAll(name, null, new Date(0), path, domain, secure);
+    }
+};
+```
+
+`unset`删除方法
+```js
+SubCookieUtil.unset('data', 'name');  // 仅删除名为name的子cookie
+SubCookieUtil.unsetAll("data"); // 删除整个cookie
+```
+
+
+- 关于cookie的思考
+
+还有一类cookie称为HTTP专有cookie, 专有cookie可以从浏览器或服务器设置，但是只能从服务器端读取，js无法获取专有cookie的值
+
+不能再`cookie`中存储重要和敏感数据
+
+
+### IE用户数据
+
+持久化数据，允许每个文档最懂128KB数据，每个域名最多1MB数据，使用持久数据必须使用CSS在某个元素上制定`userData`行为
+```html
+<div style="behavior:url(#default#userData)" id="dataStore"></div>
+```
+
+一旦数据使用了`userData`行为，就可以使用`setAttribute`方法来保存数据
+为了将数据提交到浏览器缓存中，必须调用`save()`方法并告诉要保存到数据空间的名字
+
+```js
+var dataStore = document.getElementById('dataStore');
+
+dataStore.setAttribute('name', 'Nicholas');
+dataStore.setAttribute('book', 'Professional js');
+dataStore.save('BookInfo')
+```
+
+调用方法
+
+```js
+dataStore.load("BookInfo");
+dataStore.getAttribute("name")
+```
+
+删除方法
+
+```js
+dataStore.removeAttribute("name")
+```
+
+### Web存储机制
+
