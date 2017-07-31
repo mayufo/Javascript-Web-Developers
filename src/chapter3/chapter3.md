@@ -3,57 +3,89 @@
 
 ## 语法
 
-- 区分大小写
+###  区分大小写
 
-- 标识符
+    不能使用标识符命名
+
+### 标识符
 
     - 第一个字符必须是字母、下划线或美元字符
     - 其他字符可以是字母、下划线、美元符号或数字
     - 采用驼峰大小写格式，第一个字母小写，其他大写
 
-- 切换到严格模式
+### 注释
+
+```js
+// 单行注释
+
+/*
+ * 多行注释
+ */
+```
+
+### 严格模式
+
 ```js
 "use strict"
 ```
 
-- 分号不省略，即使是一句判断也要加括号
+```js
+function doSomething() {
+  "use strict"
+}
+```
+
+### 语句
+
+- 分号不省略
+- 一句判断也要加括号
 
 ## 关键字和保留字
 
 ## 变量
 
-ECMAScript的变量时松散类型，可以用来保存任何类型的数据
+`ECMAScript`的变量是松散类型，可以用来保存任何类型的数据
 
 `var`操作符定义的变量将成为定义该变量的作用域中的局部变量，如果在函数中使用 `var`定义一个变量，变量在函数退出后会被销毁
 
-省略`var`操作符可以定义全局变量，不推荐，给未声明的变量在严格模式下会导致跑出ReferenceError的错误
+省略`var`操作符可以定义全局变量，不推荐，给未声明的变量在严格模式下会导致跑出`ReferenceError`的错误
 
 ## 数据类型
 
-undefined\null\boolean\number\string\object
+- Undefined
+- null
+- Boolean
+- number
+- String
+- Object
 
-object本质上是一组无序的名值对组成的
+Object本质上是一组无序的名值对组成的
 
-**typeof** 是操作符不是函数不需要括号，返回的类型都是字符串 
+### typeof操作符
 
-### undefined 没有初始化的值
+**typeof** 是操作符不是函数不需要括号，返回的类型都是`字符串`
 
-声明和尚未声明的变量`console`声明的是`undefine`没有声明的直接警告
+### undefined 
+
+`var` 声明变量但未对其加以初始化，就是`undefined`
 
 但是用typeof 弹出，它们都是 `undefined`
+
+不存在需要显式的吧一个变量设置为`undefined`
 
 ```js
 var message;
 
-console.log(1,message); // undefined
+console.log(1,message); // "undefined"
 console.log(1,age);  // 弹出错误
 
-console.log(2, typeof message);  // undefined
-console.log(2, typeof age)  // undefined
+console.log(2, typeof message);  // "undefined"
+console.log(2, typeof age)  // "undefined"
 ```
 
 ### Null 空对象指针
 
+如果定义的变量准备将来用于保存对象，可以初始化为`null`
 ```js
 var car = null;
 console.log(typeof car); // "object"
