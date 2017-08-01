@@ -1,6 +1,9 @@
 /**
  * Created by may on 2017/6/29.
  */
+
+console.log(Number.MIN_VALUE);
+console.log(Number.MAX_VALUE);
 var message;
 
 // console.log(1,message); // undefined
@@ -20,16 +23,21 @@ console.log(Number('123blur'));
 console.log(Number('0xA'));
 
 console.log(parseInt('000001'))
-console.log(parseInt('123blur'))
+console.log(parseInt('1234blur456'))
 
 console.log(parseFloat('0.22.5'));
 
+var text = "This is the letter sigma:";
+console.log(text.length);
+
 var num = 10;
+var text11 = null
 console.log(num.toString());  //'10'
 console.log(num.toString(2));
 console.log(num.toString(8));
 console.log(num.toString(10));
 console.log(num.toString(16));
+console.log(text11.toString());
 
 console.log(String(10));
 console.log(String(true));
