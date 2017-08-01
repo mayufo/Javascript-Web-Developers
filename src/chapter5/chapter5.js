@@ -12,8 +12,10 @@ if(Array.isArray(colors)) {
     console.log(true);
 }
 
-console.log(colors.toString());
-console.log(colors.valueOf());
+var colorss = ['red', 'blue', 'green'];
+
+console.log(colorss.toString(),11);
+console.log(colorss.valueOf(),22);
 
 var person1 = {
     toLocaleString : function () {

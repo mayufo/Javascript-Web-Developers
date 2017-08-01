@@ -2,7 +2,7 @@
 
 是一种数据结构
 
-## object类型
+## Object类型
 
 - new操作符后跟Object构造函数
 ```js
@@ -15,6 +15,25 @@ var person = {
     name: 'mayufo'
 }
 ```
+对象字面量也可以向函数传递大量可选参数
+
+```js
+function displayInfo(args) {
+  var output = '';
+  if (typeof args.name == 'string') {
+      output += 'Name' + args.name +'\n'
+  }
+  if (typeof args.age == 'number') {
+      output += 'Age' +args.age + '\n';
+  }
+  console.log(output);
+}
+
+displayInfo({
+    name: 'may',
+    age: 18
+})
+```
 
 访问对象
 - 点表示法
@@ -24,7 +43,8 @@ var person = {
 
 ## Array类型
 
-- 构造创建，在构建的时候可以省略 `new`
+- 构造创建
+
 ```js
 var colors = new Array(3);
 var colors1 = Array(3);
@@ -33,7 +53,7 @@ var names = new Array('Greg');
 var names1 = Array('Greg');
 ```
 
-- 数组字面量表示法
+- 数组字面量表示法 (推荐)
 
 ```js
 var color = ['red', 'blue', 'green'];
@@ -42,14 +62,14 @@ var color = ['red', 'blue', 'green'];
 利用 `length`属性可以方便给数组末尾添加新项
 ```js
 color[color.length] = 'may';
-color[99] = 'ufo'
+color[99] = 'ufo';
 console.log(color.length); // 100
 ```
 新数组长度是100，而4-99不存在，访问是 `undefined`
 
 ### 检测数组
 
-`instanceof`问题在于假定只有一个全局执行环境，在两个以上不同的全局执行环境，会存在不同笨笨的`Array`构造函数
+`instanceof`问题在于假定只有一个全局执行环境，在两个以上不同的全局执行环境，会存在不同版本的`Array`构造函数
 可以使用 `Array.isArray()`来判断是否是数组
 
 ```js
@@ -62,10 +82,12 @@ if(Array.isArray(colors)) {
 
 所有对象都有 `toLocaleString()`、`toString()`、`valueOf()`
 
+`toString()` 返回数组中每个值的字符串形势拼接而成的一个以逗号分隔的字符串
+`valueOf` 返回的还是数组
 ```js
 var colors = ['red', 'blue', 'green'];
-console.log(colors.toString()); // red, blue,green
-console.log(colors.valueOf()); // red, blue,green
+console.log(colors.toString()); // "red,blue,green"
+console.log(colors.valueOf()); //  ["red", "blue", "green"]
 ```
 
 ```js
@@ -89,13 +111,11 @@ var person2 = {
 var people = [person1, person2];
 console.log(people); //Nicholas,Greg
 console.log(people.toString(), 'toString'); //Nicholas,Greg
-console.log(people.valueOf(), 'valueOf');
 console.log(people.toLocaleString()); //Nikolaos,Grigorios
 ```
 
-调用数组的每一项用的 `toString`
 
-`join()`可以使用不同的分隔符重构字符串
+`join()`可以使用不同的分隔符重构字符串,将数组转变为字符串
 
 ```js
 console.log(colors.join('|')) // red|green|blue
@@ -104,24 +124,27 @@ console.log(colors.join('|')) // red|green|blue
 ### 栈方法
 
 后进先出
-
 `push()`逐个添加到数组末尾
 `pop()`移除数组末尾最后一项
 
 ### 队列方法
 
+先进先出
 `shift()`删除数组第一项
 `unshift()`在数组第一项的位置插入
 
 ### 重排序方法
-`revers()` 反转原来数组的顺序
+
+- `revers()` 反转原来数组的顺序
 
 ```js
 var values= [1,2,3,4,5];
 values.reverse();
 console.log(values); // 5,4,3,2,1
 ```
-`sort()`升序方法，但是因为对每一项调用 `toString()`以后排序，数字的排序就不是很好，`sort()`方法接受一个比较函数作为参数，制定那个值位于那个值的前面
+- `sort()`升序方法，每一项调用 `toString()`以后排序
+
+`sort()`方法接受一个比较函数作为参数，制定那个值位于那个值的前面
 
 `比较函数`接受两个参数，如果第一个参数位于第二个参数之前应该返回负数，如果相等返回0，如果第一个参数在第二个参数后面返回1
 
@@ -151,7 +174,7 @@ function compare(value1, value2) {
 
 ### 操作方法
 
-`concat()` 基于当前所有项创建一个新数组，不会影响原始数组
+1. `concat()` 基于当前所有项创建一个新数组，不会影响原始数组
 
 ```js
 var colors3 = ['red', 'green']; 
@@ -159,7 +182,7 @@ var colors4 = colors3.concat('yellow', ['brown']);
 console.log(colors3, colors4);// ['red', 'green']  ['red', 'green', 'yellow', 'brown']
 ```
 
-`slice()`基于当前数组中的一个或者多个项创建一个新数组,不会影响原始数组
+2. `slice()`基于当前数组中的一个或者多个项创建一个新数组,不会影响原始数组
 
 ```js
 var colors5 = ['red', 'green', 'yellow', 'brown', 'pink', 'blue'];
@@ -168,20 +191,30 @@ console.log(colors5.slice(1), 11); // ['green', 'yellow', 'brown', 'pink', 'blue
 console.log(colors5.slice(1, 4), 44); // [ 'green', 'yellow', 'brown']
 ```
 
-`splice()`数组操作
+如果slice里面有负数，则用数组长度加上改数来确定相应位置比如5项的数组调用`slice(-2, -1)`相当于`slice(3, 4)`
+
+3. `splice()`数组操作
 
 - 删除 两个参数，要删除的第一项的位置，要删除的项数
 
-- 插入 三个参数，起始位置，要删除的项数，要插入的项数
+- 插入 三个参数，起始位置，要删除的项数(0)，要插入的项数
 
-- 替换 可以指向位置插入任意数量的项，且同事删除任意数量的项
+- 替换 起始的位置，要删除的项数和要插入的项数
 
 `splice()`始终都返回一个数组，从原始数组中删除的项，如果没有删除的项返回一个空数组
 
 ```js
 var color7 = ['red', 'green', 'blue'];
 var removed = color7.splice(0,1);
-console.log(color7, removed); // ['green', 'blue']   ['red']
+console.log(color7, removed); // ['green', 'blue']，['red']
+
+var removed1 = color7.splice(1, 0, "yellow", "orange")
+console.log(color7); //  ['green','yellow','orange', 'blue']
+console.log(removed1); //[]
+
+var removed1 = colors.splice(1, 1, "red", "purple");
+console.log(color7); // ['green','red','purple', 'organge', 'blue']
+console.log(removed1); // ['yellow']
 ```
 
 ### 位置方法
@@ -189,19 +222,21 @@ console.log(color7, removed); // ['green', 'blue']   ['red']
 `indexOf()`从数组的开头向后查找
 `lastIndex()` 从数组的末尾开始向前查找
 
+接收两个参数要查找的项和查找起点位置的索引
+
 没有找到返回 `-1`
 
 
 ### 迭代方法
 
 每个方法都接收两个参数，对每一项上运行的函数，运行该函数的作用域对象
-传入这些方法的函数接受三个参数，数组项的值，该数组的位置，数组对象本身
+传入这些方法的函数接受三个参数，`数组项的值`，`该数组的位置`，`数组对象本身`
 
 `every()`如果每一项都返回true,则返回true
-`filter()`返回该函数返回true的项组成的数组
-`forEach()`没有返回
+`filter()`返回该函数会返回true的项组成的数组
+`forEach()`每一项运行给定函数没有返回
 `map()`每次函数调用的结果组成数组
-`some()`任意一项返回true,则返回true
+`some()`任一项返回true,则返回true
 
 ```js
 var numbers = [1,2,3,4,5,4,3,2,1];
@@ -210,12 +245,12 @@ var everyResult = numbers.every(function(item, index, array){
 });
 console.log(everyResult); //false
 
-var someResult = numbers.every(function(item, index, array){
+var someResult = numbers.some(function(item, index, array){
     return (item > 2);
 });
 console.log(someResult); //true
 
-var filterResult = numbers.every(function(item, index, array){
+var filterResult = numbers.filter(function(item, index, array){
     return (item > 2);
 });
 console.log(filterResult); [3,4,5,4,3]
@@ -228,10 +263,12 @@ console.log(mapResult); //[2,4,6,8,10,8,6,4,2]
 ```
 ### 归并方法
 
+会迭代数组的所有项，构建一个最终返回的值
+
 `reduce()`从数组第一项开始逐个遍历到最后
 `reduceRight()` 从数组第一项开始逐个到第一项
 
-两个参数 调用函数和作为归并基础的初始值
+接收两个参数，调用函数和作为归并基础的初始值
 
 给`reduce()`和 `reduceRight()`的函数接收4个参数  前一个值、当前值、索引值、数组对象
 
@@ -244,6 +281,7 @@ console.log(sum); //15
 ```
 
 ## Date类型
+
 创建日期
 
 ```js
@@ -260,10 +298,10 @@ var now = new Date();
 创建一个2004年5月25日的日期对象
 
 ```js
-var someDate = new Date(Date.parse("May 25, 2004"));
+var someDate = new Date(Date.parse("May 25, 2004")); //这两段代码等价
 var someDate1 = new Date("May 25, 2004")
 ```
-如果字符串不能表示为日期，返回NaN，也可以将字符串传递给构造函数`Date`,也会调用`Date.parse()`
+如果字符串不能表示为日期，返回NaN
 
 `Date.UTC()` 也是返回日期的毫秒数，
 
@@ -276,7 +314,7 @@ new Date(Date.UTC(2000, 0));  2000/1/1
 new Date(Date.UTC(2005,4,5,17,55,55)); // 200/5/5 下午5:55:55
 ```
 
-两者的区别在于，`Date.parse()`是基于本地时区而非GMT来创建，`Date()`构造函数参数与`Date.UTC`相同
+`Date()`基于本地时区而非GMT来创建，`Date()`构造函数参数与`Date.UTC`相同
 
 `Data.now()`调用这个方法时的日期和时间的毫秒数
 ```js
@@ -315,7 +353,7 @@ console.log(new Date().toLocaleString()); // 2017-7-3 14:53:09
 
 `toLocalString()`与 `toString()`方法一样
 
-### 日期、时间组件方法
+### 日期/时间组件方法
 
 方法 | 说明 
 ----|------
@@ -363,25 +401,32 @@ var pattern3 = /.at/gi; //匹配所有以at结尾的3个字符的组合，不区
 ```js
 var pattern1 = /\[bc\]at/i; // 匹配一个[bc]at,不区分大小写
 
-var pattern2 = /\.at/gi; //匹配所有.at
+// 匹配"[bc]at",就要对其中的方括号进行转义
+
+var pattern2 = /\.at/gi; //匹配所有.at  
+
+// 句号表示"at"之前任意一个可以构成匹配项的字符串，如果匹配".at",必须对句点本身进行转义
 ```
 
-- 使用构造创建
+- 使用构造函数
 
 ```js
-var pattern = new RegExp('[bc]at', 'i');
+var pattern = new RegExp('[bc]at', 'i'); //匹配一个 bat 或cat,不区分大小写
+var pattern2 = /[bc]at/i;
 ```
-
-转义
 
 所有的转义符必须是双重转义
 
 ```js
+var pattern1 = /\[bc\]at/i; // 匹配一个[bc]at,不区分大小写
 var pattern = new RegExp('\\[bc\\]at', 'i');
+
+var pattern1 =/\.at/i; // 匹配一个[bc]at,不区分大小写
+var pattern = new RegExp('\\.at', 'i');
 ```
 
 使用字面量始终会共享一个RegExp实例，而使用构造函数创建每一个RegExp实例都是一个新实例
-第一个循环因为上次已经索引到 `cat`,第二次从索引为3的地方开始，所以后面方法都是失败
+第一个循环因为上次已经索引到 `cat`,第二次从索引为3的地方开始，所以后面方法都是失败,由于实力属性没有重置
 第二个循环每次都是创建新的实例，因此返回true
 
 ```js
@@ -406,32 +451,113 @@ for (var i = 0; i < 10; i++ ) {
 - source 正则表达式的字符串表示
 
 ```js
-console.log(pattern1.ignoreCase); // true
+var pattern1 = /\[bc\]at/i;
+console.log(pattern1.global); // false
 console.log(pattern1.ignoreCase); // true
 console.log(pattern1.multiline); // false
 console.log(pattern1.lastIndex); // 0
-console.log(pattern1.source); // \[bc\]at
+console.log(pattern1.source); // "\[bc\]at"
 ```
 
+###  RegExp 实例方法
+
+`RegExp`主要方法是`exec()`,专门为捕获组而设计的。`exec()`接受一个参数，即要应用模拟的字符串，返回包含第一个匹配项信息的数组或者没有匹配项情况返回null
+
+还包括两个额外的属性`index` 和`input`分别表示字符串中的位置，和表达式中的字符串
+
+```js
+var text = "mom and dad and baby";
+var pattern = /mom( and dad( and baby)?)?/gi;
+
+var matches = pattern.exec(text);
+console.log(matches.index); //0
+console.log(matches.input); // "mom and dad and baby"
+console.log(matches[0]); // "mom and dad and baby"
+console.log(matches[1]); // " and dad and baby"
+console.log(matches[2]); // " and baby"
+
+```
+
+没有全局标志，同一个字符串上调用多次exec始终返回第一个匹配项的信息
+
+没有设置全局表示的情况，每次调用exec都会在字符串中即系查找新的匹配项
+
+```js
+var text = "cat, bat, sat, fat";
+
+// 不是全局模式
+var pattern1 = /.at/;
+var matches = pattern1.exec(text);
+console.log(matches.index); //0
+console.log(matches[0]); //cat
+console.log(pattern1.lastIndex); //0
+
+matches = pattern1.exec(text);
+console.log(matches.index); //0
+console.log(matches[0]); //cat
+console.log(pattern1.lastIndex); //0
+
+// 全局模式
+var pattern2 = /.at/g;
+var matches = pattern2.exec(text);
+console.log(matches.index); //0
+console.log(matches[0]); //cat
+console.log(pattern2.lastIndex); //3
+
+matches = pattern2.exec(text);
+console.log(matches.index); //5
+console.log(matches[0]); //bat
+console.log(pattern2.lastIndex); //8
+```
+
+`test()`接受一个字符串参数，模式与该参数匹配情况下返回true,否则返回false
+
+```js
+var text = "000-00-0000";
+var pattern = /\d{3}-\d{2}-\d{4}/;
+if (pattern.test(text)){
+    console.log("The pattern was matched.");
+}
+```
+RegExp实例继承的toLocaleString()和toString()方法都会返回正则表达式的字面量
+
+```js
+var pattern = new RegExp("\\[bc\\]at", "gi");
+console.log(pattern.toString()); // /\[bc\]at/gi
+console.log(pattern.toLocaleString()); // /\[bc\]at/gi
+```
 
 ### RegExp构造函数属性
 
 正则的一些表达式操作
 
 ```js
+var text = "this has been a short summer";
+var patterns = /(.)hort/g;
+
 if(patterns.test(text)) {
     console.log(RegExp.input, RegExp['$_']); //this has benn a short summer
     console.log(RegExp.leftContext, RegExp['$`']); // this has benn a
     console.log(RegExp.rightContext,RegExp["$'"]); // summer
     console.log(RegExp.lastMatch, RegExp['$&']); //short
     console.log(RegExp.lastParen, RegExp['$+']); //s
-    console.log(RegExp.multiple, RegExp['$*']); // 浏览器显示undefined
+    console.log(RegExp.multiple, RegExp['$*']); // false 浏览器显示undefined
 }
+
 ```
+
+- `input` 返回了原始字符串
+- `leftContext` 返回了单词`short`之前的字符串
+- `rightContext` 返回了`short` 之后的字符串
+- `lastMatch`返回了最近一次整个正则表达式匹配的字符串 `short`
+- `lastParent` 属性返回了最近一次匹配的捕获租，即`s`
 
 用于存储捕获组的构造函数，最多有9个
 
 ```js
+var text = "this has been a short summer";
+var pattern = /(..)or(.)/g;
+
 if(pattern.test(text)) {
     console.log(RegExp.$1); //sh
     console.log(RegExp.$2); //t
@@ -441,8 +567,6 @@ if(pattern.test(text)) {
 ### 模式的局限性
 
 缺少某些语言所支持的高级正则表达式特性
-
-
 
 ## Function 类型
 
@@ -463,7 +587,7 @@ var sum = function(sum1, sum2) {
 - Function构造函数 (不推荐)
 
 ```js
-var sum = new function('num1', 'num2', 'return num1 + num2')
+var sum = new Function("num1", "num2", "return num1 + num2");
 ```
 
 函数名仅仅只指向函数的指针
@@ -506,11 +630,14 @@ function add10(num) {
     return num + 10;
 }
 
-var result = callSomeFunction (add10, 10);
+var result = callSomeFunction (add10, 10);  // 函数名仅仅是一个包含指针的变量
 console.log(result); //10
 ```
 
-从一个函数中返回一个函数
+
+- 从一个函数中返回一个函数
+
+在一个函数中嵌套另一个函数，而且内部函数前面加一个`return操作符`
 
 ```js
 
@@ -538,7 +665,7 @@ console.log(data[0].age); // 18
 
 ### 函数内部属性
 
-- argument 保存函数参数，此对象有个 `callee的属性`，指向拥有这个 `arguments`对象的函数
+- `argument` 保存函数参数，`arguments.callee`指向拥有这个`arguments`对象的函数
 
 计算阶乘
 
@@ -566,8 +693,6 @@ function factorial(num) {
 
 - `this` 引用函数执行的环境对象
 
-函数名仅仅是一个包含指针的变量
-
 - `caller`  保存着调用当前函数的函数的引用，如果在全局作用域中调用当前函数，值为`null`
 
 ```js
@@ -588,7 +713,7 @@ outer();
 严格模式中访问 `argument.callee`会错误
 
 `argument.caller` 严格模式错误，非严格模式`undefined`
-严格模式不能为函数的caller赋值
+严格模式不能为函数的`caller`赋值
 
 ### 函数属性和方法
 
@@ -598,20 +723,24 @@ outer();
 
 ```js
 function sayName(name) {
-    conole.log(name);
+    console.log(name);
 }
 
 console.log(sayName.length); //1
 ```
 
-- prototype 保存所有实例方法的真正所在 不可枚举，使用 `for in`无法发现
+- `prototype` 保存所有实例方法的真正所在 不可枚举，使用 `for...in`无法发现
 
-每个函数还包含两个非继承方法 
+每个函数还包含两个非继承方法`apply()`和`call()`
 在特定的作用域中调用函数，设置函数体内`this`对象的值
-- apply() 接收两个参数，一个是其中运行函数的作用域，第二个数参数数组，可以是 `Array`的实例，也可以是 `arguments`对象
+- `apply()` 接收两个参数，一个是其中运行函数的作用域，第二个数参数数组，可以是 `Array`的实例，也可以是 `arguments`对象
 
 这里传入的`this`,实际就是 `window`对象
 ```js
+function sum(num1, num2){
+    return num1 + num2;
+}
+
 function callSum1(num1, num2) {
     return sum.apply(this, arguments);
 }
@@ -625,17 +754,20 @@ console.log(callSum2(10, 10)); //20
 
 ```
 
-
-- call()
+- `call()`
 
 ```js
+function sum(num1, num2){
+    return num1 + num2;
+}
+
 function callSum3(num1, num2) {
     return sum.call(this, num1, num2);
 }
 console.log(callSum3(10, 10)); //20
 ```
 
-实际应用 - 扩充作用域，对象不需要与方法有任何耦合关系
+实际应用扩充作用域，对象不需要与方法有任何耦合关系
 
 ```js
 window.color = 'red';
@@ -694,14 +826,14 @@ s1 = null;
 
 上面的步骤适用于 `Boolean`和 `Number`
 
-`引用类型`和`基本包装类型`主要区别就是对象的生存期
-引用类型 当执行流离开当前作用域之前一直保存在内存中
-基本包类型 只存在于一行代码的执行瞬间，然后立即被销毁，无法在基本类型值添加属性和方法
+`引用类型`和`基本包装类型`主要区别就是对象的`生存期`
+`引用类型` 当执行流离开当前作用域之前一直保存在内存中
+`基本包类型` 只存在于一行代码的执行瞬间，然后立即被销毁，无法在基本类型值添加属性和方法
 
 
 也可以显示调用 `Boolean`、`Number`、`String`来创建基本包装类型的对象，但是应该在必要的情况下
 
-`Object`构造函数就想工厂一样，根据传入值的类型返回相应基本保证类型的实例
+`Object`构造函数就像工厂一样，根据传入值的类型返回相应基本保证类型的实例
 
 ```js
 var obj = new Object('some text');
@@ -713,10 +845,10 @@ console.log(obj instanceof String); //true
 ```js
 var value = '25';
 var number = Number(value); // 转型函数
-console.log(typeof number)// number
+console.log(typeof number)// "number"
 
 var obj = new Number(value); //构造函数
-console.log(typeof obj); // object
+console.log(typeof obj); // "object"
 ```
 
 ### Boolean类型
