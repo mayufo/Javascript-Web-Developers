@@ -865,20 +865,28 @@ console.log(result1)  // false
 ```
 
 
-`Boolean()`类型的实例重写了`valueOf()`、`toString()`返回字符串`true`和`false`,
+`Boolean()`类型的实例重写了`valueOf()`返回基本类型的true或false、`toString()`返回字符串`true`和`false`,
 不建议直接实例化`Boolean`
 
+和基本类型的两个区别
+
+- typeof操作符对基本类型返回`"boolean"`,对引用类型返回`"object"`
+- Boolean对象是`Boolean`类型的实例，所以使用`instanceof`返回true,基本类型返回false
 ```js
 var falseValue = false;
-var result1 = falseValue && true;
-console.log(result1)  // false
-console.log(typeof falseValue); //boolean
-console.log(falseValue instanceof Boolean); //false
+var falseObject = new Boolean(false);
+alert(typeof falseObject); //object
+alert(typeof falseValue); //boolean
+alert(falseObject instanceof Boolean); //true
+alert(falseValue instanceof Boolean); //false
 ```
 
-### Number 类型
+不推荐使用
 
-`toString()`方法传递一个表示基数的参数，返回几进制的字符串形势
+### Number 类型
+`valueOf`返回对象表示的基本类型数值
+`toLocaleString()`、`toString()`返回字符串形势的数值
+`toString()`方法传递一个表示基数的参数，返回几进制的字符串形式
 
 ```js
 var num = 10;
@@ -886,13 +894,14 @@ console.log(num.toString()); // '10'
 console.log(num.toString(2)); // '1010'
 console.log(num.toString(8)); // '12'
 ```
+Number类型还提供将数值格式化为字符串的方法
 
 `toFixed()` 按照指定的小数位数返回数值的字符串表示,能够四舍五入，适用于货币，但是每个浏览器又有所不同
 可以表示 0 - 20个小数位
 
 ```js
 var numFix = 10;
-console.log(numFix.toFixed(2)) // 10.00
+console.log(numFix.toFixed(2)) // "10.00"
 ```
 
 `toExponentail()`返回以指数表示
@@ -913,22 +922,27 @@ console.log(num.toPrecision(3)); // '99.0'
 
 不建议直接实例化`Number`,同`Boolean`
 
+使用`typeof`操作符测试基本类型数值返回`"number"`,而猜测是`Number`对象是，返回`"object"`,类似的`Number`对象是`Number`类型的实例，基本类型的数值则不是
+
+
 ### String 类型
 
-`valueOf()`、`toLocaleString()`和 `toString()`都返回对象所便是的基本字符串值
+`valueOf()`、`toLocaleString()`和 `toString()`都返回对象所表示的基本字符串值
 
 每个实例都有个`length`属性
 
 - 字符串方法
 
 `charAt()`以单字符串字符串的形式返回给定位置的字符串
+`charCodeAt()`返回对应的字符编码
+使用方括号加数字索引来访问字符串中的特定字符
+
 ```js
 var stringValue = 'hello world'
 console.log(stringValue.charAt(1)); //'e'
 console.log(stringValue.charCodeAt(1));  // 101
+console.log(stringValue[1]); // 'e'
 ```
-
-`charCodeAt()`返回对应的字符编码
 
 - 字符串的操作方法
 
@@ -959,7 +973,7 @@ console.log(stringValue.substr(3, 7)); // 'lo world'
 
 `slice()` 和 `substr()` 会将负数加字符串长度, 而 `substring()`将所有负数参数默认为0
 
-`substr()`将第二个负数参数转为0，`slice()`会将第二个负数加字符串长度
+`substr()`第二个负数参数转为0，`slice()`会将第二个负数加字符串长度
 
 ```js
 var stringValue = 'hello world';
@@ -975,9 +989,10 @@ console.log(stringValue.substr(3, -4)); // '' 第三个位置返回0个参数
 
 `indexOf()`（前向后） 和 `lastIndexOf()` （从后向前）从一个字符串中搜索给定的子字符串，第二个参数是从那个位置之后开始搜索
 
-
+匹配所有子字符串
 ```js
-var stringValue1 = "Lorem ipsum dolor sit amet, consectetur adipisicing elit"; var positions = new Array();
+var stringValue1 = "Lorem ipsum dolor sit amet, consectetur adipisicing elit"; 
+var positions = new Array();
 var pos = stringValue1.indexOf("e");
 while(pos > -1){
     positions.push(pos);
@@ -986,8 +1001,18 @@ while(pos > -1){
 console.log(positions);
 ```
 
-`trim()` 删除前置后置的所有空格  `str.trim()`
+- trim()方法
 
+`trim()` 创建一个字符串的副本，删除前置和后置的所有空格删除前置后置的所有空格，返回结果
+
+```js
+var stringValue = " hello world ";
+var trimmedStringValue = stringValue.trim();
+console.log(stringValue); //" hello world "
+console.log(trimmedStringValue); //"hello world"
+```
+
+- 字符串的大小写转换方法
  
 `toLowerCase()` 转为小写 `toUpperCase()` 转为大写
 
@@ -1017,20 +1042,24 @@ console.log(execStr);// ["cat", index: 0, input: "cat, bat, sat, fat"]
 
 ```js
 var text = 'cat, bat, sat, fat';
-console.log(text.search(/at/));
+console.log(text.search(/at/)); // 1
 ```
 `replace()`替换字符串的操作，接受两个参数，第一个参数可以是正则或者字符串，第二个参数可以是字符串或者一个函数，如果想全局替换，就要提供全局 `g`
 
 ```js
-console.log(text.replace('at', 'ond')); // cond,bat,sat,bat
-
-console.log(text.replace(/at/g, 'ond'));  // cond,bond,sond,bond
+var text = "cat, bat, sat, fat";
+var result = text.replace("at", "ond");
+console.log(result); //"cond, bat, sat, fat"
+result = text.replace(/at/g, "ond");
+console.log(result); //"cond, bond, sond, fond"
 ```
   
 第二个字符串的参数还可以使用一些特殊的字符序列
  
 ```js
-console.log(text.replace(/(.at)/g, 'world($1)'));  // world(cat), world(bat), world(sat), world(fat)
+var text = "cat, bat, sat, fat";
+result = text.replace(/(.at)/g, "word ($1)");
+console.log(result); //word (cat), word (bat), word (sat), word (fat)
 ```
 
 `$&` 匹配整个模式的子字符串 RegExp.lastMatch相同
@@ -1049,29 +1078,31 @@ result = text.replace(/(.at)/g, 'word($1)');
 console.log(text.replace(/(.at)/g, 'world($1)'));  // world(cat), world(bat), world(sat), world(fat)
 ```
 
-第二个字符串参数可以是一个函数，
+第二个字符串参数可以是一个函数
+
 - 在只有一个匹配项的时候，这个函数可以有3个参数 模式的匹配项、模式匹配项在字符串的位置和原始字符串
 - 在有多个匹配项的时候，参数依次是模式的匹配项，后两个参数依然是匹配项字符串的位置和原始字符串
 
 ```js
-function htmlEscape(text) {
-    return text.replace(/[<>"&]/g, function (match, pos, originalText) {
-        switch (match) {
-            case '<':
-                return '&lt;';
-            case '>':
-                return '&gt;';
-            case '&':
-                return '&amp;';
-            case '\"':
+function htmlEscape(text){
+    return text.replace(/[<>"&]/g, function(match, pos, originalText){
+        switch(match){
+            case "<":
+                return "&lt;";
+            case ">":
+                return "&gt;";
+            case "&":
+                return "&amp;";
+            case "\"":
                 return "&quot;";
         }
-    })
+        });
 }
-console.log(htmlEscape("<p class=\"greeting\">Hello world!</p>")); //&lt;p class=&quot;greeting&quot;&gt;Hello world!&lt;/p&gt;
+console.log(htmlEscape("<p class=\"greeting\">Hello world!</p>")); 
+//&lt;p class=&quot;greeting&quot;&gt;Hello world!&lt;/p&gt;
 ```
  
-`split` 可以指定分隔符讲一个字符串分割成多个字符串，并将结果放在一个数组中，分隔符可以是字符串，也可以是 `RegExp`,第二个参数可以指定数组的大小
+`split()` 可以指定分隔符将一个字符串分割成多个字符串，并将结果放在一个数组中，分隔符可以是字符串，也可以是 `RegExp`,第二个参数可以指定数组的大小
 
 ```js
 
@@ -1086,6 +1117,7 @@ console.log(colorText.split(/[^\,]+/)); //["", ",", ",", ",", ""]
 大写字母 > 小写字母
 
 ```js
+var stringValue = "yellow";
 console.log(stringvalue.localeCompare('brick'));  // 1
 console.log(stringvalue.localeCompare('yellow')); //0
 console.log(stringvalue.localeCompare('zoo'));  //-1
@@ -1100,6 +1132,10 @@ console.log(stringvalue.localeCompare('zoo'));  //-1
 ```js
 console.log(String.fromCharCode(104, 101, 108, 108, 111)); // hello
 ```
+
+- HTML方法
+
+专门用于简化创建HTML格式化任务的方法，不推荐使用
 
 ## 单体内置对象
 
@@ -1128,9 +1164,9 @@ console.log(encodeURIComponent(uri));  // http%3A%2F%2Fwww.wrox.com%2Fillegal%20
 `decodeURI()`和 `decodeURIComponent()`分别对应解码解码，`decodeURI()` 无法解析编码过的冒号、问号、井号
 
 
-### eval() 方法
+- eval() 方法
 
-当解析器发现调用这个方法，会将传入的参数当做世界的语句解析，然后执行结果插入到原来位置，可以引用在包含环境中定义的变量
+当解析器发现调用这个方法，会将传入的参数当做实际的语句解析，然后执行结果插入到原来位置，可以引用在包含环境中定义的变量
 
 ```js
 var msg = 'hello world';
@@ -1146,10 +1182,11 @@ sayhi();
 
 - Global对象属性
 
-`undefined`、 `NaN`、 `Infinity` `Array` `Function` ...
+`undefined`、 `NaN`、 `Infinity` `Array` `Function` ...都是`Global`的属性
 
 - window 对象
 
+全局作用域中声明的所有变量和函数，都成了window对象的属性
 ```js
 var color1 =  'red';
 console.log(window.color1);
@@ -1194,7 +1231,8 @@ console.log(Math.max.apply(Math, [22, 33, 4, 55]));//55
 值 = Math.floor(Math.random() * 可能值的总数(大数-小数+1) + 第一个可能的值)
 
 ```js
-console.log(Math.floor(Math.random() * 9 + 2)); // 取 2 - 9的随机数
+console.log(Math.floor(Math.random() * 10 + 1)); // 取 1 - 10的随机数
+console.log(Math.floor(Math.random() * 9 + 2)); // 取 2 - 10的随机数
 ```
 
 ```js
