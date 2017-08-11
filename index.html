@@ -3,8 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <style>
+
+        .box1 .left{
+            float: left;
+            width: 100px;
+            height: 100px;
+            background: yellow;
+        }
+
+        .box1 .right {
+            margin-left: 100px;
+            height: 100px;
+            background: green;
+        }
+
+        .box2 {
+            position: relative;
+            width: 100%;
+            height: 100px;
+            overflow: hidden;
+        }
+
+        .box2 .left{
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: yellow;
+        }
+
+        .box2 .right {
+            margin-left: 100px;
+            height: 100px;
+            width: 100%;
+            background: green;
+        }
+
+        .box3 {
+            display: flex;
+            height: 100px;
+            overflow: hidden;
+        }
+
+        .box3 .left {
+            width: 100px;
+            height: 100%;
+            background-color: red;
+        }
+
+        .box3 .right {
+            flex:1;
+            height: 100%;
+            background-color: greenyellow;
+        }
+
+        .container-grail {
+            height: 200px;
+            padding: 0 200px;
+        }
+
+        .container-grail .middle {
+            width: 100%;
+            height: 200px;
+            background-color: deeppink;
+            float:left;
+            min-height: 200px;
+        }
+
+        .container-grail .left {
+            width: 200px;
+            height: 200px;
+            background: blue;
+            float: left;
+            margin-left: -100%;
+            position: relative;
+            left: -200px;
+            min-height: 200px;
+        }
+
+        .container-grail .right {
+            width: 200px;
+            height: 200px;
+            background: green;
+            float: left;
+            margin-left: -200px;
+            position: relative;
+            right: -200px;
+            min-height: 200px;
+        }
+
+        .container-fly {
+            height: 200px;
+        }
+
+        .container-fly .main, .container-fly .left, .container-fly .right {
+            float: left;
+            min-height: 200px;
+        }
+
+        .container-fly .left {
+            margin-left: -100%;
+            width: 200px;
+            background: red;
+        }
+
+        .container-fly .right {
+            margin-left: -200px;
+            width: 200px;
+            background: blue;
+        }
+
+        .container-fly .main {
+            width: 100%;
+        }
+
+        .container-fly .main-inner {
+            margin: 0 200px 0 200px;
+            min-height: 200px;
+            background: green;
+
+        }
+        .footer{
+            clear: both;
+        }
+
+        .container-flex {
+            display: flex;
+        }
+
+        .container-flex div {
+            height: 100px;
+        }
+
+        .container-flex .left {
+            order: -1
+        }
+
+        .container-flex .main {
+            flex-grow: 1;
+            background: red;
+        }
+
+        .container-flex .left, .container-flex .right {
+            width: 200px;
+            background: greenyellow;
+        }
+
+    </style>
 </head>
-<body >
+<body>
 <!--&lt;!&ndash; chapter10 start &ndash;&gt;-->
 <!--<div>123</div>-->
 <!--<ul class="user bd list" data-appId="12345" data-myname="Nicholas">-->
@@ -89,7 +236,45 @@
 <!--<div id="status"></div>-->
 <!-- chapter23 start -->
 
-<div style="behavior:url(#default#userData)" id="dataStore"></div>
+<!--<div style="behavior:url(#default#userData)" id="dataStore"></div>-->
 
+<div class="box1">
+    <div class="left">left1</div>
+    <div class="right">right1</div>
+</div>
+
+<div class="box2">
+    <div class="left">left2</div>
+    <div class="right">right2</div>
+</div>
+
+<div class="box3">
+    <div class="left">left3</div>
+    <div class="right">right3</div>
+</div>
+
+<div class="container-grail">
+    <div class="middle">三列布局是一种很常见的页面布局方式，三列一般分别是子列sub、主列main和附加列extra，其中子列一般是居左的导航，且宽度固定；主列是居中的主要内容，宽度自适应；附加列一般是广告等额外信息，居右且宽度固定。
+        圣杯布局和双飞翼布局都可以实现这种三列布局，他们有什么特别之处呢？</div>
+    <div class="left">left</div>
+    <div class="right">right</div>
+    <div class="footer"></div>
+</div>
+
+<div class="container-fly">
+    <div class="main">
+        <div class="main-inner">双翼布局</div>
+    </div>
+    <div class="left">left</div>
+    <div class="right">right</div>
+    <div class="footer"></div>
+</div>
+
+
+<div class="container-flex">
+    <div class="main">我是主体(优先加载)</div>
+    <div class="left">左边(固定宽度)</div>
+    <div class="right">右边(固定宽度)</div>
+</div>
 </body>
 </html>
